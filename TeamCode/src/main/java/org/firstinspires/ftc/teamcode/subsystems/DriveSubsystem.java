@@ -7,14 +7,17 @@ import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveKinematics;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveOdometry;
+import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveWheelSpeeds;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class DriveSubsystem extends SubsystemBase {
 
 
-    //Mecanum Drive Stuff
+    //Internal Stuff.   TOUCH WITH CARE!
     private MecanumDriveKinematics m_kinematics;
+    private MecanumDriveOdometry m_odometry;
+    private Pose2d m_pose;
 
     //Robot Drivetrain and gyroscope
     private BNO055IMU imu;
@@ -56,7 +59,7 @@ public class DriveSubsystem extends SubsystemBase {
         // Creating my odometry object from the kinematics object. Here,
         // our starting pose is 5 meters along the long end of the field and in the
         // center of the field along the short end, facing forward.
-        MecanumDriveOdometry m_odometry = new MecanumDriveOdometry
+        m_odometry = new MecanumDriveOdometry
                 (
                         m_kinematics, getGyroHeading(),
                         new Pose2d(5.0, 13.5, new Rotation2d()
@@ -66,7 +69,21 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        // Get my wheel speeds; assume .getRate() has been
+        // set up to return velocity of the encoder
+        // in meters per second.
+        MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds
+                (
+                        fl_drive.getRate(), fr_drive.getRate(),
+                        bl_drive.getRate(), br_drive.getRate()
+                );
+
+        // Get my gyro angle.
+        Rotation2d gyroAngle = getGyroHeading();
+        // Update the pose
+
+        double unixTime = System.currentTimeMillis() / 1000.0;
+        m_pose = m_odometry.updateWithTime(unixTime, gyroAngle, wheelSpeeds);
     }
 
     private Rotation2d getGyroHeading() {
