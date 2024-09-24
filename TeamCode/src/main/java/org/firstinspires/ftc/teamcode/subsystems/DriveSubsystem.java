@@ -37,6 +37,8 @@ public class DriveSubsystem extends SubsystemBase {
         fl_drive = new Motor(hardwareMap, "fl_drive");
         br_drive = new Motor(hardwareMap, "br_drive");
         bl_drive = new Motor(hardwareMap, "bl_drive");
+        //x offset is 7.5
+        //y offset is 6.75
 
 
         /* The counts per revolution of the motor as well as the distance per pulse.
