@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveKinematics;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveOdometry;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveWheelSpeeds;
@@ -19,12 +20,12 @@ public class DriveSubsystem extends SubsystemBase {
     private MecanumDriveOdometry m_odometry;
     private Pose2d m_pose;
 
-    //Robot Drivetrain and gyroscope
-    private BNO055IMU imu;
-    private Motor fr_drive;
-    private Motor br_drive;
-    private Motor bl_drive;
-    private Motor fl_drive;
+    //Robot Drivetrain and Gyroscope
+    private final BNO055IMU imu;
+    private final Motor fr_drive;
+    private final Motor br_drive;
+    private final Motor bl_drive;
+    private final Motor fl_drive;
     /**
      * Creates our drive subsystem
      */
@@ -32,14 +33,25 @@ public class DriveSubsystem extends SubsystemBase {
         //Robot drivetrain and gyroscope initialization
         //TODO: Get motor brand and type were using this year!
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        Motor fr_drive = new Motor(hardwareMap, "fr_drive");
-        Motor fl_drive = new Motor(hardwareMap, "fl_drive");
-        Motor br_drive = new Motor(hardwareMap, "br_drive");
-        Motor bl_drive = new Motor(hardwareMap, "bl_drive");
+        fr_drive = new Motor(hardwareMap, "fr_drive");
+        fl_drive = new Motor(hardwareMap, "fl_drive");
+        br_drive = new Motor(hardwareMap, "br_drive");
+        bl_drive = new Motor(hardwareMap, "bl_drive");
+
+
+        /* The counts per revolution of the motor as well as the distance per pulse.
+         *  AND WHAT IS WRONG WITH THE VARIABLE TYPES??!?!?!?
+         */
+        final double CPR = fr_drive.getCPR();
+        final double wheelCircumference = 0.02 * 2 * Math.PI;
+        final double DPP = wheelCircumference / CPR;
+        fr_drive.setDistancePerPulse(DPP);
+        fl_drive.setDistancePerPulse(DPP);
+        br_drive.setDistancePerPulse(DPP);
+        bl_drive.setDistancePerPulse(DPP);
 
         // Locations of the wheels relative to the robot center.
-
-        //TODO:  Change to real values when we have it
+        //TODO:  Change to real values once we have it
         Translation2d m_frontLeftLocation =
                 new Translation2d(0.381, 0.381);
         Translation2d m_frontRightLocation =
@@ -91,5 +103,30 @@ public class DriveSubsystem extends SubsystemBase {
         Rotation2d rot2d;
         rot2d = new Rotation2d(imu.getAngularOrientation().firstAngle);
         return rot2d;
+    }
+
+    public Pose2d getPose() {
+        return m_pose;
+    }
+
+    public void drive(double x_speed, double y_speed, double rot_speed, double maxTranslationSpeed) {
+        // The desired field relative speed here is 2 meters per second
+        // toward the opponent's alliance station wall, and 2 meters per
+        // second toward the left field boundary. The desired rotation
+        // is a quarter of a rotation per second counterclockwise.
+        // The current robot angle is 45 degrees.
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                x_speed, y_speed, rot_speed, getGyroHeading()
+        );
+
+        // Now use this in our kinematics
+        MecanumDriveWheelSpeeds wheelSpeeds =
+                m_kinematics.toWheelSpeeds(speeds);
+
+
+        fl_drive.set(wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed);
+        fr_drive.set(wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed);
+        bl_drive.set(wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed);
+        bl_drive.set(wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed);
     }
 }
