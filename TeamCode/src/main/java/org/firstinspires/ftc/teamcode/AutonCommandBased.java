@@ -19,7 +19,7 @@ public class AutonCommandBased extends CommandOpMode {
     public void initialize() {
         driveSubsystem = new DriveSubsystem(hardwareMap);
         driveCommand = new DriveCommand(driveSubsystem, gamepad1);
-        driveSubsystem.setDefaultCommand(driveCommand);
+
         register(driveSubsystem);
     }
 }
