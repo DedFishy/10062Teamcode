@@ -37,31 +37,30 @@ public class DriveSubsystem extends SubsystemBase {
         fl_drive = new Motor(hardwareMap, "fl_drive");
         br_drive = new Motor(hardwareMap, "br_drive");
         bl_drive = new Motor(hardwareMap, "bl_drive");
-        //x offset is 7.5
-        //y offset is 6.75
+
 
 
         /* The counts per revolution of the motor as well as the distance per pulse.
          *  AND WHAT IS WRONG WITH THE VARIABLE TYPES??!?!?!?
          */
         final double CPR = fr_drive.getCPR();
-        final double wheelCircumference = 0.02 * 2 * Math.PI;
+        final double wheelCircumference = 0.104 * Math.PI;
         final double DPP = wheelCircumference / CPR;
         fr_drive.setDistancePerPulse(DPP);
         fl_drive.setDistancePerPulse(DPP);
         br_drive.setDistancePerPulse(DPP);
         bl_drive.setDistancePerPulse(DPP);
-
         // Locations of the wheels relative to the robot center.
-        //TODO:  Change to real values once we have it
+        // x offset is 7.5
+        // y offset is 6.75
         Translation2d m_frontLeftLocation =
-                new Translation2d(0.381, 0.381);
+                new Translation2d(0.1905, 0.17145);
         Translation2d m_frontRightLocation =
-                new Translation2d(0.381, -0.381);
+                new Translation2d(0.1905, -0.17145);
         Translation2d m_backLeftLocation =
-                new Translation2d(-0.381, 0.381);
+                new Translation2d(-0.1905, 0.17145);
         Translation2d m_backRightLocation =
-                new Translation2d(-0.381, -0.381);
+                new Translation2d(-0.1905, -0.17145);
 
         // Creating my kinematics object using the wheel locations.
         m_kinematics = new MecanumDriveKinematics
@@ -76,7 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
         m_odometry = new MecanumDriveOdometry
                 (
                         m_kinematics, getGyroHeading(),
-                        new Pose2d(5.0, 13.5, new Rotation2d()
+                        new Pose2d(0.0, 0.0, new Rotation2d()
                         )
                 );
     }
@@ -94,8 +93,8 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Get my gyro angle.
         Rotation2d gyroAngle = getGyroHeading();
-        // Update the pose
 
+        // Update the pose
         double unixTime = System.currentTimeMillis() / 1000.0;
         m_pose = m_odometry.updateWithTime(unixTime, gyroAngle, wheelSpeeds);
     }
