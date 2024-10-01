@@ -14,9 +14,12 @@ public class TeleopCommandBased extends CommandOpMode {
 
     @Override
     public void initialize() {
-        driveSubsystem = new DriveSubsystem(hardwareMap);
+        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
         driveCommand = new DriveCommand(driveSubsystem, gamepad1);
         driveSubsystem.setDefaultCommand(driveCommand);
         register(driveSubsystem);
+        driveCommand.schedule();
     }
+
+
 }

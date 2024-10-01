@@ -12,6 +12,8 @@ import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveWheelSpeed
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class DriveSubsystem extends SubsystemBase {
 
 
@@ -26,19 +28,23 @@ public class DriveSubsystem extends SubsystemBase {
     private final Motor br_drive;
     private final Motor bl_drive;
     private final Motor fl_drive;
+    private final Telemetry telemetry;
     /**
      * Creates our drive subsystem
      */
-    public DriveSubsystem(HardwareMap hardwareMap) {
+    public DriveSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
         //Robot drivetrain and gyroscope initialization
         //TODO: Get motor brand and type were using this year!
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        fr_drive = new Motor(hardwareMap, "fr_drive");
-        fl_drive = new Motor(hardwareMap, "fl_drive");
-        br_drive = new Motor(hardwareMap, "br_drive");
-        bl_drive = new Motor(hardwareMap, "bl_drive");
+        fr_drive = new Motor(hardwareMap, "fr_drive", Motor.GoBILDA.RPM_312);
+        fl_drive = new Motor(hardwareMap, "fl_drive", Motor.GoBILDA.RPM_312);
+        br_drive = new Motor(hardwareMap, "br_drive", Motor.GoBILDA.RPM_312);
+        bl_drive = new Motor(hardwareMap, "bl_drive", Motor.GoBILDA.RPM_312);
+        BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
 
+        imu.initialize(imuParams);
 
+        this.telemetry = telemetry;
 
         /* The counts per revolution of the motor as well as the distance per pulse.
          *  AND WHAT IS WRONG WITH THE VARIABLE TYPES??!?!?!?
@@ -129,5 +135,9 @@ public class DriveSubsystem extends SubsystemBase {
         fr_drive.set(wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed);
         bl_drive.set(wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed);
         bl_drive.set(wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed);
+        telemetry.addData("X Speed", x_speed);
+        telemetry.addData("Y Speed", y_speed);
+        telemetry.addData("Rotation Speed", rot_speed);
+        telemetry.update();
     }
 }

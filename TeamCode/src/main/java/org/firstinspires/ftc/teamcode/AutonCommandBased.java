@@ -14,7 +14,7 @@ public class AutonCommandBased extends CommandOpMode {
 
     @Override
     public void initialize() {
-        driveSubsystem = new DriveSubsystem(hardwareMap);
+        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
         driveCommand = new DriveCommand(driveSubsystem, gamepad1);
 
         register(driveSubsystem);
