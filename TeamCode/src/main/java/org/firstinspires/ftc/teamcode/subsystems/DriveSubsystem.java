@@ -44,6 +44,10 @@ public class DriveSubsystem extends SubsystemBase {
 
         imu.initialize(imuParams);
 
+        fl_drive.setInverted(true);
+        bl_drive.setInverted(true);
+
+
         this.telemetry = telemetry;
 
         /* The counts per revolution of the motor as well as the distance per pulse.
@@ -108,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
     private Rotation2d getGyroHeading() {
 
         Rotation2d rot2d;
-        rot2d = new Rotation2d(imu.getAngularOrientation().firstAngle);
+        rot2d = new Rotation2d(imu.getAngularOrientation().firstAngle + Math.toRadians(90));
         return rot2d;
     }
 
@@ -134,10 +138,14 @@ public class DriveSubsystem extends SubsystemBase {
         fl_drive.set(wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed);
         fr_drive.set(wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed);
         bl_drive.set(wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed);
-        bl_drive.set(wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed);
+        br_drive.set(wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed);
         telemetry.addData("X Speed", x_speed);
         telemetry.addData("Y Speed", y_speed);
         telemetry.addData("Rotation Speed", rot_speed);
+        telemetry.addData("Front Left Wheel Speed", wheelSpeeds.frontLeftMetersPerSecond);
+        telemetry.addData("Front Right Wheel Speed", wheelSpeeds.frontRightMetersPerSecond);
+        telemetry.addData("Back Left Wheel Speed", wheelSpeeds.rearLeftMetersPerSecond);
+        telemetry.addData("Back Right Wheel Speed", wheelSpeeds.rearRightMetersPerSecond);
         telemetry.update();
     }
 }
