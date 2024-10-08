@@ -49,7 +49,6 @@ public class DriveSubsystem extends SubsystemBase {
 
 
         this.telemetry = telemetry;
-
         /* The counts per revolution of the motor as well as the distance per pulse.
          *  AND WHAT IS WRONG WITH THE VARIABLE TYPES??!?!?!?
          */
@@ -147,5 +146,9 @@ public class DriveSubsystem extends SubsystemBase {
         telemetry.addData("Back Left Wheel Speed", wheelSpeeds.rearLeftMetersPerSecond);
         telemetry.addData("Back Right Wheel Speed", wheelSpeeds.rearRightMetersPerSecond);
         telemetry.update();
+    }
+    public double encoderRevolutions(){
+        telemetry.addData("Encoder Revolutions", fr_drive.encoder.getRevolutions());
+        return fr_drive.encoder.getRevolutions();
     }
 }
