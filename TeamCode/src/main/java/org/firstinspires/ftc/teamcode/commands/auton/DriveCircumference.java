@@ -11,8 +11,9 @@ public class DriveCircumference extends CommandBase {
 
 
     private final DriveSubsystem drive;
-    private final double speed = 0.5;
+    private final double speed = 0.1;
     private final double tolerance = 0.01;
+    private double encoderStartValue;
 
     /**
      * Makes the bot stop for a specified period
@@ -25,12 +26,12 @@ public class DriveCircumference extends CommandBase {
 
     @Override
     public void initialize() {
-
+        this.encoderStartValue = drive.encoderRevolutions();
     }
 
     @Override
     public void execute() {
-        if (1 >= drive.encoderRevolutions()) {
+        if (1 >=encoderStartValue - drive.encoderRevolutions()) {
             drive.drive(0,speed,0,0.5);
         }
         else {
@@ -41,7 +42,7 @@ public class DriveCircumference extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double distanceToNewPose = Math.abs(Math.abs(drive.encoderRevolutions()) - 1);
+        double distanceToNewPose = Math.abs(Math.abs(encoderStartValue - drive.encoderRevolutions()) - 1);
         return distanceToNewPose <= tolerance;
     }
 }

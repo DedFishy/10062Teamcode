@@ -149,6 +149,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
     public double encoderRevolutions(){
         telemetry.addData("Encoder Revolutions", fr_drive.encoder.getRevolutions());
-        return fr_drive.encoder.getRevolutions();
+        return Math.abs(fr_drive.encoder.getRevolutions());
     }
 }
