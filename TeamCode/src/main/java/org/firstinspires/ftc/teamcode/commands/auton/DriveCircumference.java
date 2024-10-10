@@ -31,7 +31,7 @@ public class DriveCircumference extends CommandBase {
 
     @Override
     public void execute() {
-        if (1 >=encoderStartValue - drive.encoderRevolutions()) {
+        if (1 >=drive.encoderRevolutions() - encoderStartValue) {
             drive.drive(0,speed,0,0.5);
         }
         else {
@@ -47,7 +47,8 @@ public class DriveCircumference extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double distanceToNewPose = Math.abs(Math.abs(encoderStartValue - drive.encoderRevolutions()) - 1);
+        double distanceToNewPose = Math.abs(Math.abs(drive.encoderRevolutions() - encoderStartValue)
+                - 1);
         return distanceToNewPose <= tolerance;
     }
 }
