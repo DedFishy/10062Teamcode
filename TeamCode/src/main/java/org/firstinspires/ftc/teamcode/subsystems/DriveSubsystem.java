@@ -49,11 +49,11 @@ public class DriveSubsystem extends SubsystemBase {
 
 
         this.telemetry = telemetry;
-        /* The counts per revolution of the motor as well as the distance per pulse.
+        /** The counts per revolution of the motor as well as the distance per pulse.
          *  AND WHAT IS WRONG WITH THE VARIABLE TYPES??!?!?!?
          */
         final double CPR = fr_drive.getCPR();
-        final double wheelCircumference = 0.104 * Math.PI;
+        final double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
         final double DPP = wheelCircumference / CPR;
         fr_drive.setDistancePerPulse(DPP);
         fl_drive.setDistancePerPulse(DPP);
