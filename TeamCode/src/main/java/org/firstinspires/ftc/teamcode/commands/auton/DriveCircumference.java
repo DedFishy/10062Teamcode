@@ -12,7 +12,7 @@ public class DriveCircumference extends CommandBase {
 
     private final DriveSubsystem drive;
     private final double speed = 0.1;
-    private final double tolerance = 0.01;
+    private final double tolerance = 0.001;
     private double encoderStartValue;
 
     /**
@@ -37,6 +37,11 @@ public class DriveCircumference extends CommandBase {
         else {
             drive.drive(0,-speed,0,0.5);
         }
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drive.drive(0,0,0,0);
     }
 
 
