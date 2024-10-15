@@ -47,6 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
         fl_drive.setInverted(true);
         bl_drive.setInverted(true);
 
+        m_pose = new Pose2d();
 
         this.telemetry = telemetry;
         /** The counts per revolution of the motor as well as the distance per pulse.
@@ -87,6 +88,8 @@ public class DriveSubsystem extends SubsystemBase {
                         new Pose2d(0.0, 0.0, new Rotation2d()
                         )
                 );
+
+
     }
 
     @Override
@@ -145,6 +148,9 @@ public class DriveSubsystem extends SubsystemBase {
         telemetry.addData("Front Right Wheel Speed", wheelSpeeds.frontRightMetersPerSecond);
         telemetry.addData("Back Left Wheel Speed", wheelSpeeds.rearLeftMetersPerSecond);
         telemetry.addData("Back Right Wheel Speed", wheelSpeeds.rearRightMetersPerSecond);
+        telemetry.addData("Encoder Revolutions", Math.abs(fr_drive.encoder.getRevolutions()));
+        telemetry.addData("Current Pose Y", m_pose.getY());
+        telemetry.addData("Current Pose X", m_pose.getX());
         telemetry.update();
     }
     public double encoderRevolutions(){

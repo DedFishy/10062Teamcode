@@ -25,6 +25,7 @@ public class AutonDriveYDistanceCommand extends CommandBase {
     public AutonDriveYDistanceCommand(DriveSubsystem subsystem, double driveDistance, double yDrive) {
         drive = subsystem;
         this.driveDistance = driveDistance;
+        this.yDrive = yDrive;
 
         //Use addRequirements() here to declare subsystem dependencies.
         addRequirements(drive);
@@ -49,7 +50,7 @@ public class AutonDriveYDistanceCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-
+        drive.drive(0,0,0,0);
     }
 
 

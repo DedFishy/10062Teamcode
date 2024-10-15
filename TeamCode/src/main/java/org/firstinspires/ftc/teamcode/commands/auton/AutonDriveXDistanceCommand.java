@@ -49,7 +49,7 @@ public class AutonDriveXDistanceCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-
+        drive.drive(0,0,0,0);
     }
 
 
