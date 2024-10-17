@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 /**
- * An example command that uses an example subsystem.
+ * The teleop drive command that uses the drive subsystem
  */
 public class DriveCommand extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
@@ -42,11 +42,14 @@ public class DriveCommand extends CommandBase {
     @Override
     public void execute() {
         m_DriveSubsystem.drive(
-                gamepad1.left_stick_x * maxTranslationSpeed,
+                gamepad1.left_stick_x * maxTranslationSpeed * 0,
                 -gamepad1.left_stick_y * maxTranslationSpeed,
-                gamepad1.right_stick_x * maxRotSpeed, maxTranslationSpeed);
+                gamepad1.right_stick_x * 0 * maxRotSpeed, maxTranslationSpeed);
 
 
+        if(gamepad1.dpad_up) {
+            m_DriveSubsystem.clearEncoderPulse();
+        }
     }
 
     @Override

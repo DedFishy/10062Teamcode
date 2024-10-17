@@ -115,7 +115,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Update the pose
         double unixTime = System.currentTimeMillis() / 1000.0;
-        m_pose = m_odometry.updateWithTime(unixTime, gyroAngle, wheelSpeeds);
+        //m_pose = m_odometry.updateWithTime(unixTime, gyroAngle, wheelSpeeds);
     }
 
     private Rotation2d getGyroHeading() {
@@ -156,9 +156,10 @@ public class DriveSubsystem extends SubsystemBase {
         telemetry.addData("Back Left Wheel Speed", wheelSpeeds.rearLeftMetersPerSecond);
         telemetry.addData("Back Right Wheel Speed", wheelSpeeds.rearRightMetersPerSecond);
         telemetry.addData("Front Right Encoder Revolutions", Math.abs(fr_drive.encoder.getRevolutions()));
-        telemetry.addData("Current Pose Y", m_pose.getY());
-        telemetry.addData("Current Pose X", m_pose.getX());
-        telemetry.addData("Current Pose Rotation", m_pose.getRotation().getDegrees());
+        //telemetry.addData("Current Pose Y", m_pose.getY());
+        //telemetry.addData("Current Pose X", m_pose.getX());
+        //telemetry.addData("Current Pose Rotation", m_pose.getRotation().getDegrees());
+        telemetry.addData("Distance Y (In meters)", getDistance());
         telemetry.update();
     }
     public double encoderRevolutions(){
