@@ -13,6 +13,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.opencv.core.Mat;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -21,6 +22,12 @@ public class DriveSubsystem extends SubsystemBase {
     private MecanumDriveKinematics m_kinematics;
     private MecanumDriveOdometry m_odometry;
     private Pose2d m_pose;
+
+    private double fr_motor_offset;
+    private double fl_motor_offset;
+    private double br_motor_offset;
+    private double bl_motor_offset;
+    private double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
 
     //Robot Drivetrain and Gyroscope
     private final BNO055IMU imu;
@@ -54,12 +61,12 @@ public class DriveSubsystem extends SubsystemBase {
          *  AND WHAT IS WRONG WITH THE VARIABLE TYPES??!?!?!?
          */
         final double CPR = fr_drive.getCPR();
-        final double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
-        final double DPP = wheelCircumference / CPR;
-        fr_drive.setDistancePerPulse(DPP);
-        fl_drive.setDistancePerPulse(DPP);
-        br_drive.setDistancePerPulse(DPP);
-        bl_drive.setDistancePerPulse(DPP);
+        //final double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
+        //final double DPP = wheelCircumference / CPR;
+        //fr_drive.setDistancePerPulse(DPP);
+        //fl_drive.setDistancePerPulse(DPP);
+        //br_drive.setDistancePerPulse(DPP);
+        //bl_drive.setDistancePerPulse(DPP);
         // Locations of the wheels relative to the robot center.
         // x offset is 7.5
         // y offset is 6.75
@@ -82,12 +89,12 @@ public class DriveSubsystem extends SubsystemBase {
         // Creating my odometry object from the kinematics object. Here,
         // our starting pose is 5 meters along the long end of the field and in the
         // center of the field along the short end, facing forward.
-        m_odometry = new MecanumDriveOdometry
-                (
-                        m_kinematics, getGyroHeading(),
-                        new Pose2d(0.0, 0.0, new Rotation2d()
-                        )
-                );
+        //m_odometry = new MecanumDriveOdometry
+        //        (
+        //                m_kinematics, getGyroHeading(),
+        //                new Pose2d(0.0, 0.0, new Rotation2d()
+        //                )
+        //        );
 
 
     }
@@ -99,8 +106,8 @@ public class DriveSubsystem extends SubsystemBase {
         // in meters per second.
         MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds
                 (
-                        fl_drive.getRate(), fr_drive.getRate(),
-                        bl_drive.getRate(), br_drive.getRate()
+                        fl_drive.encoder.getRate(), fr_drive.encoder.getRate(),
+                        bl_drive.encoder.getRate(), br_drive.encoder.getRate()
                 );
 
         // Get my gyro angle.
@@ -148,13 +155,41 @@ public class DriveSubsystem extends SubsystemBase {
         telemetry.addData("Front Right Wheel Speed", wheelSpeeds.frontRightMetersPerSecond);
         telemetry.addData("Back Left Wheel Speed", wheelSpeeds.rearLeftMetersPerSecond);
         telemetry.addData("Back Right Wheel Speed", wheelSpeeds.rearRightMetersPerSecond);
-        telemetry.addData("Encoder Revolutions", Math.abs(fr_drive.encoder.getRevolutions()));
+        telemetry.addData("Front Right Encoder Revolutions", Math.abs(fr_drive.encoder.getRevolutions()));
         telemetry.addData("Current Pose Y", m_pose.getY());
         telemetry.addData("Current Pose X", m_pose.getX());
+        telemetry.addData("Current Pose Rotation", m_pose.getRotation().getDegrees());
         telemetry.update();
     }
     public double encoderRevolutions(){
         telemetry.addData("Encoder Revolutions", Math.abs(fr_drive.encoder.getRevolutions()));
         return Math.abs(fr_drive.encoder.getRevolutions());
+    }
+
+    /**
+     * Our own encoder system
+     */
+
+    public double getDistance() {
+        double fr_encoder_current_position_with_offset = fr_drive.encoder.getRevolutions() -
+                fr_motor_offset;
+        double fl_encoder_current_position_with_offset = fl_drive.encoder.getRevolutions() -
+                fl_motor_offset;
+        double br_encoder_current_position_with_offset = br_drive.encoder.getRevolutions() -
+                br_motor_offset;
+        double bl_encoder_current_position_with_offset = bl_drive.encoder.getRevolutions() -
+                bl_motor_offset;
+
+        double average = ((fr_encoder_current_position_with_offset +
+                fl_encoder_current_position_with_offset + br_encoder_current_position_with_offset +
+                bl_encoder_current_position_with_offset) / 4) * wheelCircumference;
+        return average;
+    }
+
+    public void clearEncoderPulse() {
+        fr_motor_offset = fr_drive.encoder.getRevolutions();
+        fl_motor_offset = fl_drive.encoder.getRevolutions();
+        br_motor_offset =  br_drive.encoder.getRevolutions();
+        bl_motor_offset = bl_drive.encoder.getRevolutions();
     }
 }
