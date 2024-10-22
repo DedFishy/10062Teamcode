@@ -32,10 +32,10 @@ public class DriveCircumference extends CommandBase {
     @Override
     public void execute() {
         if (1 >=drive.encoderRevolutions() - encoderStartValue) {
-            drive.drive(0,speed,0,0.5);
+            drive.drive(0,speed,0,0.5,false);
         }
         else {
-            drive.drive(0,-speed,0,0.5);
+            drive.drive(0,-speed,0,0.5,false);
         }
     }
 

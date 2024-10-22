@@ -129,15 +129,25 @@ public class DriveSubsystem extends SubsystemBase {
         return m_pose;
     }
 
-    public void drive(double x_speed, double y_speed, double rot_speed, double maxTranslationSpeed) {
+    public void drive(double x_speed, double y_speed, double rot_speed,
+                      double maxTranslationSpeed, boolean fieldRelative) {
         // The desired field relative speed here is 2 meters per second
         // toward the opponent's alliance station wall, and 2 meters per
         // second toward the left field boundary. The desired rotation
         // is a quarter of a rotation per second counterclockwise.
         // The current robot angle is 45 degrees.
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                x_speed, y_speed, rot_speed, getGyroHeading()
-        );
+        ChassisSpeeds speeds;
+        if (fieldRelative) {
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                    x_speed, y_speed, rot_speed, getGyroHeading()
+            );
+        } else {
+            speeds = new ChassisSpeeds(
+                    x_speed, y_speed, rot_speed
+            );
+        }
+
+
 
         // Now use this in our kinematics
         MecanumDriveWheelSpeeds wheelSpeeds =
@@ -148,6 +158,8 @@ public class DriveSubsystem extends SubsystemBase {
         fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
         bl_drive.set(1 * (wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed));
         br_drive.set(0.7945392491 * (wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed));
+
+
         telemetry.addData("X Speed", x_speed);
         telemetry.addData("Y Speed", y_speed);
         telemetry.addData("Rotation Speed", rot_speed);

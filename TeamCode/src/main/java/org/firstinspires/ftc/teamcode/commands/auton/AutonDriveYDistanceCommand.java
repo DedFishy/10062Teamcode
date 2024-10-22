@@ -41,16 +41,16 @@ public class AutonDriveYDistanceCommand extends CommandBase {
     @Override
     public void execute() {
         if (newPosition >= drive.getPose().getY()) {
-            drive.drive(0,yDrive,0,0.5);
+            drive.drive(0,yDrive,0,0.5,false);
         }
         else {
-            drive.drive(0,-yDrive,0,0.5);
+            drive.drive(0,-yDrive,0,0.5,false);
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        drive.drive(0,0,0,0);
+        drive.drive(0,0,0,0,false);
     }
 
 

@@ -41,10 +41,10 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
     @Override
     public void execute() {
         if (newRotation >= drive.getPose().getRotation().getDegrees()) {
-            drive.drive(0,0, rotSpeed,0.5);
+            drive.drive(0,0,rotSpeed,0.5,false);
         }
         else {
-            drive.drive(0,0, -rotSpeed,0.5);
+            drive.drive(0,0,-rotSpeed,0.5, false);
         }
     }
 
