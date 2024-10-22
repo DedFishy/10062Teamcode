@@ -41,7 +41,7 @@ public class DriveCircumference extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        drive.drive(0,0,0,0);
+        drive.drive(0,0,0,0,false);
     }
 
 
