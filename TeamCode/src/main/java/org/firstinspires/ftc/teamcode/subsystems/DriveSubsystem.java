@@ -27,7 +27,7 @@ public class DriveSubsystem extends SubsystemBase {
     private double fl_motor_offset;
     private double br_motor_offset;
     private double bl_motor_offset;
-    private double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
+    private double wheelCircumference = 0.4842182834; //0.104 * Math.PI; //Centimeters = 30.6
 
     //Robot Drivetrain and Gyroscope
     private final BNO055IMU imu;
@@ -144,10 +144,10 @@ public class DriveSubsystem extends SubsystemBase {
                 m_kinematics.toWheelSpeeds(speeds);
 
 
-        fl_drive.set(wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed);
-        fr_drive.set(wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed);
-        bl_drive.set(wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed);
-        br_drive.set(wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed);
+        fl_drive.set(0.7945392491 * (wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed));
+        fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
+        bl_drive.set(1 * (wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed));
+        br_drive.set(0.7945392491 * (wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed));
         telemetry.addData("X Speed", x_speed);
         telemetry.addData("Y Speed", y_speed);
         telemetry.addData("Rotation Speed", rot_speed);
@@ -155,7 +155,10 @@ public class DriveSubsystem extends SubsystemBase {
         telemetry.addData("Front Right Wheel Speed", wheelSpeeds.frontRightMetersPerSecond);
         telemetry.addData("Back Left Wheel Speed", wheelSpeeds.rearLeftMetersPerSecond);
         telemetry.addData("Back Right Wheel Speed", wheelSpeeds.rearRightMetersPerSecond);
-        telemetry.addData("Front Right Encoder Revolutions", Math.abs(fr_drive.encoder.getRevolutions()));
+        telemetry.addData("Front Right Encoder Revolutions", fr_drive.encoder.getRevolutions());
+        telemetry.addData("Front Left Encoder Revolutions", fl_drive.encoder.getRevolutions());
+        telemetry.addData("Back Right Encoder Revolutions", br_drive.encoder.getRevolutions());
+        telemetry.addData("Back Left Encoder Revolutions", bl_drive.encoder.getRevolutions());
         //telemetry.addData("Current Pose Y", m_pose.getY());
         //telemetry.addData("Current Pose X", m_pose.getX());
         //telemetry.addData("Current Pose Rotation", m_pose.getRotation().getDegrees());
@@ -182,9 +185,10 @@ public class DriveSubsystem extends SubsystemBase {
                 bl_motor_offset;
 
         double average = ((fr_encoder_current_position_with_offset +
-                fl_encoder_current_position_with_offset + br_encoder_current_position_with_offset +
+                -fl_encoder_current_position_with_offset +
+                br_encoder_current_position_with_offset +
                 bl_encoder_current_position_with_offset) / 4) * wheelCircumference;
-        return average;
+        return -average;
     }
 
     public void clearEncoderPulse() {

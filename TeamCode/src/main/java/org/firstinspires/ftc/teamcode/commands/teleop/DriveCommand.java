@@ -44,7 +44,7 @@ public class DriveCommand extends CommandBase {
         m_DriveSubsystem.drive(
                 gamepad1.left_stick_x * maxTranslationSpeed * 0,
                 -gamepad1.left_stick_y * maxTranslationSpeed,
-                gamepad1.right_stick_x * 0 * maxRotSpeed, maxTranslationSpeed);
+                gamepad1.right_stick_x  * maxRotSpeed, maxTranslationSpeed);
 
 
         if(gamepad1.dpad_up) {
