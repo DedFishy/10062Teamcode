@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
@@ -29,12 +28,12 @@ public class DriveSubsystem extends SubsystemBase {
     private double fl_motor_offset;
     private double br_motor_offset;
     private double bl_motor_offset;
-    private double wheelCircumference = 0.4842182834; //0.104 * Math.PI; //Centimeters = 30.6
+    private double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
 
     //Pidf Controller init
-    double kp = 0;
-    double ki = 0;
-    double kd = 0;
+    private final double kp = 1;
+    private final double ki = 0;
+    private final double kd = 0;
 
     //PIDFController fr_drive_pidf = new PIDFController(0,0,0,0);
     //PIDFController fl_drive_pidf = new PIDFController(0,0,0,0);
@@ -72,6 +71,14 @@ public class DriveSubsystem extends SubsystemBase {
         fr_drive.setVeloCoefficients(kp,ki,kd);
         bl_drive.setVeloCoefficients(kp,ki,kd);
         br_drive.setVeloCoefficients(kp,ki,kd);
+
+        fl_drive.setRunMode(Motor.RunMode.VelocityControl);
+        fr_drive.setRunMode(Motor.RunMode.VelocityControl);
+        bl_drive.setRunMode(Motor.RunMode.VelocityControl);
+        br_drive.setRunMode(Motor.RunMode.VelocityControl);
+
+
+
         m_pose = new Pose2d();
 
         this.telemetry = telemetry;
@@ -172,12 +179,30 @@ public class DriveSubsystem extends SubsystemBase {
                 m_kinematics.toWheelSpeeds(speeds);
 
 
+        //Converting MPS to CPS
+        double fl_desiredWheelSpeedCPS = (wheelSpeeds.frontLeftMetersPerSecond /
+                wheelCircumference) / this.fl_drive.getCPR();
+
+        double fr_desiredWheelSpeedCPS = (wheelSpeeds.frontRightMetersPerSecond /
+                wheelCircumference) / this.fr_drive.getCPR();
+
+        double bl_desiredWheelSpeedCPS = (wheelSpeeds.rearLeftMetersPerSecond /
+                wheelCircumference) / this.fl_drive.getCPR();
+
+        double br_desiredWheelSpeedCPS = (wheelSpeeds.rearRightMetersPerSecond /
+                wheelCircumference) / this.br_drive.getCPR();
+
+        fl_drive.set(fl_desiredWheelSpeedCPS);
+        fr_drive.set(fr_desiredWheelSpeedCPS);
+        bl_drive.set(bl_desiredWheelSpeedCPS);
+        br_drive.set(br_desiredWheelSpeedCPS);
+
         //fl_drive.set(1 * (wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed));
         //fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
         //bl_drive.set(1 * (wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed));
         //br_drive.set(1 * (wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed));
 
-
+        //TODO: ADD desired wheel CPS speed current wheel speed CPS to telemetry
         telemetry.addData("X Speed", x_speed);
         telemetry.addData("Y Speed", y_speed);
         telemetry.addData("Rotation Speed", rot_speed);
