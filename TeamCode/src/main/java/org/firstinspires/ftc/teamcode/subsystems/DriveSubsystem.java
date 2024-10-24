@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
@@ -23,11 +24,22 @@ public class DriveSubsystem extends SubsystemBase {
     private MecanumDriveOdometry m_odometry;
     private Pose2d m_pose;
 
+
     private double fr_motor_offset;
     private double fl_motor_offset;
     private double br_motor_offset;
     private double bl_motor_offset;
     private double wheelCircumference = 0.4842182834; //0.104 * Math.PI; //Centimeters = 30.6
+
+    //Pidf Controller init
+    double kp = 0;
+    double ki = 0;
+    double kd = 0;
+
+    //PIDFController fr_drive_pidf = new PIDFController(0,0,0,0);
+    //PIDFController fl_drive_pidf = new PIDFController(0,0,0,0);
+    //PIDFController br_drive_pidf = new PIDFController(0,0,0,0);
+    //PIDFController bl_drive_pidf = new PIDFController(0,0,0,0);
 
     //Robot Drivetrain and Gyroscope
     private final BNO055IMU imu;
@@ -54,6 +66,12 @@ public class DriveSubsystem extends SubsystemBase {
         fl_drive.setInverted(true);
         bl_drive.setInverted(true);
 
+        //Configures the internal pid loop system
+
+        fl_drive.setVeloCoefficients(kp,ki,kd);
+        fr_drive.setVeloCoefficients(kp,ki,kd);
+        bl_drive.setVeloCoefficients(kp,ki,kd);
+        br_drive.setVeloCoefficients(kp,ki,kd);
         m_pose = new Pose2d();
 
         this.telemetry = telemetry;
@@ -154,19 +172,19 @@ public class DriveSubsystem extends SubsystemBase {
                 m_kinematics.toWheelSpeeds(speeds);
 
 
-        fl_drive.set(0.7945392491 * (wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed));
-        fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
-        bl_drive.set(1 * (wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed));
-        br_drive.set(0.7945392491 * (wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed));
+        //fl_drive.set(1 * (wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed));
+        //fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
+        //bl_drive.set(1 * (wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed));
+        //br_drive.set(1 * (wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed));
 
 
         telemetry.addData("X Speed", x_speed);
         telemetry.addData("Y Speed", y_speed);
         telemetry.addData("Rotation Speed", rot_speed);
-        telemetry.addData("Front Left Wheel Speed", wheelSpeeds.frontLeftMetersPerSecond);
-        telemetry.addData("Front Right Wheel Speed", wheelSpeeds.frontRightMetersPerSecond);
-        telemetry.addData("Back Left Wheel Speed", wheelSpeeds.rearLeftMetersPerSecond);
-        telemetry.addData("Back Right Wheel Speed", wheelSpeeds.rearRightMetersPerSecond);
+        telemetry.addData("Front Left Wheel Speed", fl_drive.encoder.getRate());
+        telemetry.addData("Front Right Wheel Speed", fr_drive.encoder.getRate());
+        telemetry.addData("Back Left Wheel Speed", bl_drive.encoder.getRate());
+        telemetry.addData("Back Right Wheel Speed", br_drive.encoder.getRate());
         telemetry.addData("Front Right Encoder Revolutions", fr_drive.encoder.getRevolutions());
         telemetry.addData("Front Left Encoder Revolutions", fl_drive.encoder.getRevolutions());
         telemetry.addData("Back Right Encoder Revolutions", br_drive.encoder.getRevolutions());
@@ -177,6 +195,7 @@ public class DriveSubsystem extends SubsystemBase {
         telemetry.addData("Distance Y (In meters)", getDistance());
         telemetry.update();
     }
+
     public double encoderRevolutions(){
         telemetry.addData("Encoder Revolutions", Math.abs(fr_drive.encoder.getRevolutions()));
         return Math.abs(fr_drive.encoder.getRevolutions());
