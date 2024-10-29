@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveKinematics;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveOdometry;
@@ -13,6 +16,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Configuration;
 import org.opencv.core.Mat;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -28,12 +32,12 @@ public class DriveSubsystem extends SubsystemBase {
     private double fl_motor_offset;
     private double br_motor_offset;
     private double bl_motor_offset;
-    private double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
+    private double wheelCircumference = 0.052 * Math.PI; //Centimeters = 30.6
 
     //Pidf Controller init
-    private final double kp = 1;
-    private final double ki = 0;
-    private final double kd = 0;
+    //private final double kp = 0.5;
+    //private final double ki = 0;
+    //private final double kd = 0;
 
     //PIDFController fr_drive_pidf = new PIDFController(0,0,0,0);
     //PIDFController fl_drive_pidf = new PIDFController(0,0,0,0);
@@ -42,10 +46,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     //Robot Drivetrain and Gyroscope
     private final BNO055IMU imu;
-    private final Motor fr_drive;
-    private final Motor br_drive;
-    private final Motor bl_drive;
-    private final Motor fl_drive;
+    private final MotorEx fr_drive;
+    private final MotorEx br_drive;
+    private final MotorEx bl_drive;
+    private final MotorEx fl_drive;
     private final Telemetry telemetry;
     /**
      * Creates our drive subsystem
@@ -54,10 +58,10 @@ public class DriveSubsystem extends SubsystemBase {
         //Robot drivetrain and gyroscope initialization
         //TODO: Get motor brand and type were using this year!
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        fr_drive = new Motor(hardwareMap, "fr_drive", Motor.GoBILDA.RPM_312);
-        fl_drive = new Motor(hardwareMap, "fl_drive", Motor.GoBILDA.RPM_312);
-        br_drive = new Motor(hardwareMap, "br_drive", Motor.GoBILDA.RPM_312);
-        bl_drive = new Motor(hardwareMap, "bl_drive", Motor.GoBILDA.RPM_312);
+        fr_drive = new MotorEx(hardwareMap, "fr_drive", Motor.GoBILDA.RPM_312);
+        fl_drive = new MotorEx(hardwareMap, "fl_drive", Motor.GoBILDA.RPM_312);
+        br_drive = new MotorEx(hardwareMap, "br_drive", Motor.GoBILDA.RPM_312);
+        bl_drive = new MotorEx(hardwareMap, "bl_drive", Motor.GoBILDA.RPM_312);
         BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
 
         imu.initialize(imuParams);
@@ -67,10 +71,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         //Configures the internal pid loop system
 
-        fl_drive.setVeloCoefficients(kp,ki,kd);
-        fr_drive.setVeloCoefficients(kp,ki,kd);
-        bl_drive.setVeloCoefficients(kp,ki,kd);
-        br_drive.setVeloCoefficients(kp,ki,kd);
+        updatePIDCoefficients();
 
         fl_drive.setRunMode(Motor.RunMode.VelocityControl);
         fr_drive.setRunMode(Motor.RunMode.VelocityControl);
@@ -87,12 +88,13 @@ public class DriveSubsystem extends SubsystemBase {
          */
         final double CPR = fr_drive.getCPR();
         //final double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
-        //final double DPP = wheelCircumference / CPR;
-        //fr_drive.setDistancePerPulse(DPP);
-        //fl_drive.setDistancePerPulse(DPP);
-        //br_drive.setDistancePerPulse(DPP);
-        //bl_drive.setDistancePerPulse(DPP);
+        final double DPP = 1;
+        fr_drive.setDistancePerPulse(DPP);
+        fl_drive.setDistancePerPulse(DPP);
+        br_drive.setDistancePerPulse(DPP);
+        bl_drive.setDistancePerPulse(DPP);
         // Locations of the wheels relative to the robot center.
+
         // x offset is 7.5
         // y offset is 6.75
         Translation2d m_frontLeftLocation =
@@ -156,6 +158,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void drive(double x_speed, double y_speed, double rot_speed,
                       double maxTranslationSpeed, boolean fieldRelative) {
+        updatePIDCoefficients();
         // The desired field relative speed here is 2 meters per second
         // toward the opponent's alliance station wall, and 2 meters per
         // second toward the left field boundary. The desired rotation
@@ -180,22 +183,22 @@ public class DriveSubsystem extends SubsystemBase {
 
 
         //Converting MPS to CPS
-        double fl_desiredWheelSpeedCPS = (wheelSpeeds.frontLeftMetersPerSecond /
-                wheelCircumference) / this.fl_drive.getCPR();
+        double fl_desiredWheelSpeedRPS = (wheelSpeeds.frontLeftMetersPerSecond /
+                wheelCircumference);
 
-        double fr_desiredWheelSpeedCPS = (wheelSpeeds.frontRightMetersPerSecond /
-                wheelCircumference) / this.fr_drive.getCPR();
+        double fr_desiredWheelSpeedRPS = (wheelSpeeds.frontRightMetersPerSecond /
+                wheelCircumference);
 
-        double bl_desiredWheelSpeedCPS = (wheelSpeeds.rearLeftMetersPerSecond /
-                wheelCircumference) / this.fl_drive.getCPR();
+        double bl_desiredWheelSpeedRPS = (wheelSpeeds.rearLeftMetersPerSecond /
+                wheelCircumference);
 
-        double br_desiredWheelSpeedCPS = (wheelSpeeds.rearRightMetersPerSecond /
-                wheelCircumference) / this.br_drive.getCPR();
+        double br_desiredWheelSpeedRPS = (wheelSpeeds.rearRightMetersPerSecond /
+                wheelCircumference);
 
-        fl_drive.set(fl_desiredWheelSpeedCPS);
-        fr_drive.set(fr_desiredWheelSpeedCPS);
-        bl_drive.set(bl_desiredWheelSpeedCPS);
-        br_drive.set(br_desiredWheelSpeedCPS);
+        fl_drive.set(fl_desiredWheelSpeedRPS);
+        fr_drive.set(fr_desiredWheelSpeedRPS);
+        bl_drive.set(bl_desiredWheelSpeedRPS);
+        br_drive.set(br_desiredWheelSpeedRPS);
 
         //fl_drive.set(1 * (wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed));
         //fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
@@ -206,19 +209,48 @@ public class DriveSubsystem extends SubsystemBase {
         telemetry.addData("X Speed", x_speed);
         telemetry.addData("Y Speed", y_speed);
         telemetry.addData("Rotation Speed", rot_speed);
-        telemetry.addData("Front Left Wheel Speed", fl_drive.encoder.getRate());
-        telemetry.addData("Front Right Wheel Speed", fr_drive.encoder.getRate());
-        telemetry.addData("Back Left Wheel Speed", bl_drive.encoder.getRate());
-        telemetry.addData("Back Right Wheel Speed", br_drive.encoder.getRate());
-        telemetry.addData("Front Right Encoder Revolutions", fr_drive.encoder.getRevolutions());
-        telemetry.addData("Front Left Encoder Revolutions", fl_drive.encoder.getRevolutions());
-        telemetry.addData("Back Right Encoder Revolutions", br_drive.encoder.getRevolutions());
-        telemetry.addData("Back Left Encoder Revolutions", bl_drive.encoder.getRevolutions());
+        telemetry.addData("Front Left Wheel Speed", fl_drive.encoder.getRate() /
+                fl_drive.getCPR());
+        telemetry.addData("Front Right Wheel Speed",fr_drive.encoder.getRate() /
+                fr_drive.getCPR());
+        telemetry.addData("Back Left Wheel Speed", bl_drive.encoder.getRate() /
+                bl_drive.getCPR());
+        telemetry.addData("Back Right Wheel Speed",br_drive.encoder.getRate() /
+                br_drive.getCPR());
+        telemetry.addData("Front Right Encoder Revolutions",
+                fr_drive.encoder.getRevolutions());
+        telemetry.addData("Front Left Encoder Revolutions",
+                fl_drive.encoder.getRevolutions());
+        telemetry.addData("Back Right Encoder Revolutions",
+                br_drive.encoder.getRevolutions());
+        telemetry.addData("Back Left Encoder Revolutions",
+                bl_drive.encoder.getRevolutions());
+        telemetry.addData("FR Desired Wheel RPS speed", fr_desiredWheelSpeedRPS);
+        telemetry.addData("FL Desired Wheel RPS speed", fl_desiredWheelSpeedRPS);
+        telemetry.addData("Back Right Desired Wheel RPS speed", br_desiredWheelSpeedRPS);
+        telemetry.addData("Back Left Desired Wheel RPS speed", bl_desiredWheelSpeedRPS
+        );
         //telemetry.addData("Current Pose Y", m_pose.getY());
         //telemetry.addData("Current Pose X", m_pose.getX());
         //telemetry.addData("Current Pose Rotation", m_pose.getRotation().getDegrees());
         telemetry.addData("Distance Y (In meters)", getDistance());
         telemetry.update();
+        TelemetryPacket packet = new TelemetryPacket();
+        // FTC Dashboard Telemetry Stuff
+        packet.put("Front Left Wheel Speed", fl_drive.encoder.getRate() /
+                fl_drive.getCPR());
+        packet.put("Front Right Wheel Speed",fr_drive.encoder.getRate() /
+                fr_drive.getCPR());
+        packet.put("Back Left Wheel Speed", bl_drive.encoder.getRate() /
+                bl_drive.getCPR());
+        packet.put("Back Right Wheel Speed",br_drive.encoder.getRate() /
+                br_drive.getCPR());
+        packet.put("FR Desired Wheel RPS speed", fr_desiredWheelSpeedRPS);
+        packet.put("FL Desired Wheel RPS speed", fl_desiredWheelSpeedRPS);
+        packet.put("Back Right Desired Wheel RPS speed", br_desiredWheelSpeedRPS);
+        packet.put("Back Left Desired Wheel RPS speed", bl_desiredWheelSpeedRPS);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        dashboard.sendTelemetryPacket(packet);
     }
 
     public double encoderRevolutions(){
@@ -252,5 +284,14 @@ public class DriveSubsystem extends SubsystemBase {
         fl_motor_offset = fl_drive.encoder.getRevolutions();
         br_motor_offset =  br_drive.encoder.getRevolutions();
         bl_motor_offset = bl_drive.encoder.getRevolutions();
+    }
+    public void updatePIDCoefficients() {
+        double kp = Configuration.pidCoefficients.p;
+        double ki = Configuration.pidCoefficients.i;
+        double kd = Configuration.pidCoefficients.d;
+        fl_drive.setVeloCoefficients(kp,ki,kd);
+        fr_drive.setVeloCoefficients(kp,ki,kd);
+        bl_drive.setVeloCoefficients(kp,ki,kd);
+        br_drive.setVeloCoefficients(kp,ki,kd);
     }
 }
