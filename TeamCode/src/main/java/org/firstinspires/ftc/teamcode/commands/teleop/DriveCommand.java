@@ -42,8 +42,8 @@ public class DriveCommand extends CommandBase {
     @Override
     public void execute() {
         m_DriveSubsystem.drive(
-                gamepad1.left_stick_x * maxTranslationSpeed,
-                -gamepad1.left_stick_y * 0 * maxTranslationSpeed,
+                gamepad1.left_stick_y * maxTranslationSpeed,
+                -gamepad1.left_stick_x * 0 * maxTranslationSpeed,
                 gamepad1.right_stick_x  * maxRotSpeed, maxTranslationSpeed,
                 false);
 

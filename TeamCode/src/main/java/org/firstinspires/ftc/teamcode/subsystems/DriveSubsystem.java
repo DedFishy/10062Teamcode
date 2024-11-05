@@ -17,7 +17,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Configuration;
-import org.opencv.core.Mat;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -51,6 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
     private final MotorEx bl_drive;
     private final MotorEx fl_drive;
     private final Telemetry telemetry;
+    private final TelemetryPacket packet = new TelemetryPacket();
     /**
      * Creates our drive subsystem
      */
@@ -68,6 +68,12 @@ public class DriveSubsystem extends SubsystemBase {
 
         fl_drive.setInverted(true);
         bl_drive.setInverted(true);
+
+
+        fl_drive.setFeedforwardCoefficients(0,0,0);
+        fr_drive.setFeedforwardCoefficients(0,0,0);
+        bl_drive.setFeedforwardCoefficients(0,0,0);
+        br_drive.setFeedforwardCoefficients(0,0,0);
 
         //Configures the internal pid loop system
 
@@ -93,6 +99,7 @@ public class DriveSubsystem extends SubsystemBase {
         fl_drive.setDistancePerPulse(DPP);
         br_drive.setDistancePerPulse(DPP);
         bl_drive.setDistancePerPulse(DPP);
+
         // Locations of the wheels relative to the robot center.
 
         // x offset is 7.5
@@ -131,11 +138,11 @@ public class DriveSubsystem extends SubsystemBase {
         // Get my wheel speeds; assume .getRate() has been
         // set up to return velocity of the encoder
         // in meters per second.
-        MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds
-                (
-                        fl_drive.encoder.getRate(), fr_drive.encoder.getRate(),
-                        bl_drive.encoder.getRate(), br_drive.encoder.getRate()
-                );
+        //MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds
+                //(
+                        //fl_drive.encoder.getRate(), fr_drive.encoder.getRate(),
+                        //bl_drive.encoder.getRate(), br_drive.encoder.getRate()
+                //);
 
         // Get my gyro angle.
         Rotation2d gyroAngle = getGyroHeading();
@@ -235,7 +242,7 @@ public class DriveSubsystem extends SubsystemBase {
         //telemetry.addData("Current Pose Rotation", m_pose.getRotation().getDegrees());
         telemetry.addData("Distance Y (In meters)", getDistance());
         telemetry.update();
-        TelemetryPacket packet = new TelemetryPacket();
+
         // FTC Dashboard Telemetry Stuff
         packet.put("Front Left Wheel Speed", fl_drive.encoder.getRate() /
                 fl_drive.getCPR());
@@ -293,5 +300,11 @@ public class DriveSubsystem extends SubsystemBase {
         fr_drive.setVeloCoefficients(kp,ki,kd);
         bl_drive.setVeloCoefficients(kp,ki,kd);
         br_drive.setVeloCoefficients(kp,ki,kd);
+        //telemetry.addData("KP", kp);
+        packet.put("KP", kp);
+        packet.put("FL Actual Kp value", fl_drive.getVeloCoefficients()[0]);
+        packet.put("FR Actual Kp value", fr_drive.getVeloCoefficients()[0]);
+        packet.put("BL Actual Kp value", bl_drive.getVeloCoefficients()[0]);
+        packet.put("BR Actual Kp value", br_drive.getVeloCoefficients()[0]);
     }
 }
