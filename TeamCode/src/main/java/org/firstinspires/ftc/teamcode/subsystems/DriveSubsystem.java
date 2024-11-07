@@ -79,10 +79,10 @@ public class DriveSubsystem extends SubsystemBase {
 
         updatePIDCoefficients();
 
-        fl_drive.setRunMode(Motor.RunMode.VelocityControl);
-        fr_drive.setRunMode(Motor.RunMode.VelocityControl);
-        bl_drive.setRunMode(Motor.RunMode.VelocityControl);
-        br_drive.setRunMode(Motor.RunMode.VelocityControl);
+        //fl_drive.setRunMode(Motor.RunMode.VelocityControl);
+        //fr_drive.setRunMode(Motor.RunMode.VelocityControl);
+        //bl_drive.setRunMode(Motor.RunMode.VelocityControl);
+        //br_drive.setRunMode(Motor.RunMode.VelocityControl);
 
 
 
@@ -92,7 +92,7 @@ public class DriveSubsystem extends SubsystemBase {
         /** The counts per revolution of the motor as well as the distance per pulse.
          *  AND WHAT IS WRONG WITH THE VARIABLE TYPES??!?!?!?
          */
-        final double CPR = fr_drive.getCPR();
+
         //final double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
         final double DPP = 1;
         fr_drive.setDistancePerPulse(DPP);
@@ -202,15 +202,15 @@ public class DriveSubsystem extends SubsystemBase {
         double br_desiredWheelSpeedRPS = (wheelSpeeds.rearRightMetersPerSecond /
                 wheelCircumference);
 
-        fl_drive.set(fl_desiredWheelSpeedRPS);
-        fr_drive.set(fr_desiredWheelSpeedRPS);
-        bl_drive.set(bl_desiredWheelSpeedRPS);
-        br_drive.set(br_desiredWheelSpeedRPS);
+        //fl_drive.set(fl_desiredWheelSpeedRPS);
+        //fr_drive.set(fr_desiredWheelSpeedRPS);
+        //bl_drive.set(bl_desiredWheelSpeedRPS);
+        //br_drive.set(br_desiredWheelSpeedRPS);
 
-        //fl_drive.set(1 * (wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed));
-        //fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
-        //bl_drive.set(1 * (wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed));
-        //br_drive.set(1 * (wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed));
+        fl_drive.set(1 * (wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed));
+        fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
+        bl_drive.set(1 * (wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed));
+        br_drive.set(1 * (wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed));
 
         //TODO: ADD desired wheel CPS speed current wheel speed CPS to telemetry
         telemetry.addData("X Speed", x_speed);
@@ -250,7 +250,7 @@ public class DriveSubsystem extends SubsystemBase {
                 fr_drive.getCPR());
         packet.put("Back Left Wheel Speed", bl_drive.encoder.getRate() /
                 bl_drive.getCPR());
-        packet.put("Back Right Wheel Speed",br_drive.encoder.getRate() /
+        packet.put("Back Right Wheel Speed", br_drive.encoder.getRate() /
                 br_drive.getCPR());
         packet.put("FR Desired Wheel RPS speed", fr_desiredWheelSpeedRPS);
         packet.put("FL Desired Wheel RPS speed", fl_desiredWheelSpeedRPS);

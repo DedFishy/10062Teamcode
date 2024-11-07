@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.commands.teleop;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.Configuration;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 /**
@@ -17,7 +18,7 @@ public class DriveCommand extends CommandBase {
 
     //TODO: Correct These Values
     //Initializes some important values
-    private final double maxTranslationSpeed = 0.5;
+    private final double maxTranslationSpeed = Configuration.maxTranslationSpeed;
     private final double maxRotSpeed = 2 * Math.PI;
 
     /**
@@ -43,10 +44,13 @@ public class DriveCommand extends CommandBase {
     public void execute() {
         m_DriveSubsystem.drive(
                 gamepad1.left_stick_y * maxTranslationSpeed,
-                -gamepad1.left_stick_x * 0 * maxTranslationSpeed,
+                -gamepad1.left_stick_x  * maxTranslationSpeed,
                 gamepad1.right_stick_x  * maxRotSpeed, maxTranslationSpeed,
-                false);
+                Configuration.TeleopFieldRelative);
 
+        //m_DriveSubsystem.drive(
+                //0,1,0,maxTranslationSpeed,false
+        //);
 
         if(gamepad1.dpad_up) {
             m_DriveSubsystem.clearEncoderPulse();

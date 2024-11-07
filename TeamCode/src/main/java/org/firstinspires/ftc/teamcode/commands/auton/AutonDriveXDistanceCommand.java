@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.commands.auton;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
+import org.firstinspires.ftc.teamcode.Configuration;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 /**
@@ -40,10 +41,12 @@ public class AutonDriveXDistanceCommand extends CommandBase {
     @Override
     public void execute() {
         if (newPosition >= drive.getPose().getX()) {
-            drive.drive(xDrive,0,0,0.5,false);
+            drive.drive(xDrive,0,0,0.5,
+                    Configuration.AutonFieldRelative);
         }
         else {
-            drive.drive(-xDrive,0,0,0.5,false);
+            drive.drive(-xDrive,0,0,0.5,
+                    Configuration.AutonFieldRelative);
         }
     }
 
