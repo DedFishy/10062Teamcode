@@ -47,6 +47,9 @@ public class DriveCommand extends CommandBase {
                 -gamepad1.left_stick_x  * maxTranslationSpeed,
                 gamepad1.right_stick_x  * maxRotSpeed, maxTranslationSpeed,
                 Configuration.TeleopFieldRelative);
+        if (gamepad1.start) {
+            m_DriveSubsystem.resetImu();
+        }
 
         //m_DriveSubsystem.drive(
                 //0,1,0,maxTranslationSpeed,false

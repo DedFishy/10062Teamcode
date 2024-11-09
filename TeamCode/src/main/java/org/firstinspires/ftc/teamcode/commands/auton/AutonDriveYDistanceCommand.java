@@ -35,13 +35,13 @@ public class AutonDriveYDistanceCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        this.newPosition = driveDistance + drive.getPose().getY();
+        this.newPosition = driveDistance + drive.getDistance();
     }
 
 
     @Override
     public void execute() {
-        if (newPosition >= drive.getPose().getY()) {
+        if (newPosition >= drive.getDistance()) {
             drive.drive(0,yDrive,0,0.5,
                     Configuration.AutonFieldRelative);
         }
@@ -59,7 +59,7 @@ public class AutonDriveYDistanceCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double distanceToNewPose = Math.abs(drive.getPose().getY() - newPosition);
+        double distanceToNewPose = Math.abs(drive.getDistance() - newPosition);
         return distanceToNewPose <= tolerance;
     }
 }

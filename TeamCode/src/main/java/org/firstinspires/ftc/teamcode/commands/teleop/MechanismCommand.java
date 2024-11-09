@@ -24,7 +24,7 @@ public class MechanismCommand extends CommandBase {
     private final double maxRotSpeed = 2 * Math.PI;
 
     /**
-     * Creates a new ExampleCommand.
+     * Creates a new Command To interface with the mechansisms.
      *
      *  @param pivot
      *  @param extension
@@ -32,6 +32,7 @@ public class MechanismCommand extends CommandBase {
      *  @param gamepad2
      *  The subsystem used by this command.
      */
+
 
     public MechanismCommand(PivotMechanismSubsystem pivot,
                             ExtensionMechanismSubsystem extension,
@@ -54,21 +55,21 @@ public class MechanismCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double pivotPower = gamepad2.right_trigger - gamepad2.left_trigger * 0.5;
+        double pivotPower = (gamepad2.right_trigger - gamepad2.left_trigger * 0.5) * 0.6;
 
         pivot.setPivotPower(pivotPower);
 
         if (gamepad2.right_bumper) {
-            extension.setExtensionPower(1);
+            extension.setExtensionPower(.5);
         } else if (gamepad2.left_bumper) {
-            extension.setExtensionPower(-1);
+            extension.setExtensionPower(-.5);
         } else {
             extension.setExtensionPower(0);
         }
         if (gamepad2.b) {
-            grabber.setGrabberPower(1);
+            grabber.setGrabberPower(.5);
         } else if (gamepad2.y) {
-            grabber.setGrabberPower(-1);
+            grabber.setGrabberPower(-.2);
         } else {
             grabber.setGrabberPower(0);
         }

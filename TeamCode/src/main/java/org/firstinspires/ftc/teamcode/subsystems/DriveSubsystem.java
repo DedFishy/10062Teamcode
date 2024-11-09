@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -34,9 +35,9 @@ public class DriveSubsystem extends SubsystemBase {
     double Pcorrection;
     Orientation angles;
     Acceleration gravity;
-    float LeftStickX;
-    float LeftStickY;
-    float RightStickx;
+    double LeftStickX;
+    double LeftStickY;
+    double RightStickx;
     double StickHypot;
     float RobotAngle;
     double IntStickAngle;
@@ -66,21 +67,22 @@ public class DriveSubsystem extends SubsystemBase {
     private HardwareMap hardwareMap;
     private Telemetry telemetry;
     private BNO055IMU.Parameters imuParameters;
-    private Gamepad gamepad1;
     TelemetryPacket packet = new TelemetryPacket();
     FtcDashboard dashboard = FtcDashboard.getInstance();
     private double CPR = 537.0;
+    private double translationX = 0;
+    private double translationY = 0;
+    private double translationRot = 0;
 
     private double fr_motor_offset;
     private double fl_motor_offset;
     private double br_motor_offset;
     private double bl_motor_offset;
 
-    public DriveSubsystem (HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1) {
+    public DriveSubsystem (HardwareMap hardwareMap, Telemetry telemetry) {
 
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
-        this.gamepad1 = gamepad1;
         this.packet = packet;
         this.dashboard = dashboard;
 
@@ -132,14 +134,10 @@ public class DriveSubsystem extends SubsystemBase {
         // Get acceleration due to force of gravity.
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         gravity = imu.getGravity();
-        LeftStickX = gamepad1.left_stick_x;
-        LeftStickY = -gamepad1.left_stick_y;
-        RightStickx = gamepad1.right_stick_x;
+        LeftStickX = translationX;
+        LeftStickY = translationY;
+        RightStickx = translationRot;
         StickHypot = Math.sqrt(LeftStickX * LeftStickX + LeftStickY * LeftStickY);
-        if (gamepad1.start) {
-            imu.initialize(imuParameters);
-            HoldDirection = 0;
-        }
         RobotAngle = -angles.firstAngle;
         if (StickHypot == 0) {
             IntStickAngle = 0;
@@ -254,13 +252,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void drive(double x_speed, double y_speed, double rot_speed,
                       double maxTranslationSpeed, boolean fieldRelative) {
-
+        translationX = x_speed;
+        translationY = y_speed;
+        translationRot = rot_speed;
     }
 
-    public Pose2d getPose() {
-
-        return new Pose2d();
-    }
 
     public double getDistance() {
         double fr_encoder_current_position_with_offset = fr_drive.getCurrentPosition() -
@@ -284,6 +280,15 @@ public class DriveSubsystem extends SubsystemBase {
         fl_motor_offset = fl_drive.getCurrentPosition();
         br_motor_offset =  br_drive.getCurrentPosition();
         bl_motor_offset = bl_drive.getCurrentPosition();
+    }
+
+    public void resetImu() {
+        imu.initialize(imuParameters);
+        HoldDirection = 0;
+    }
+
+    public double getRotation() {
+        return imu.getAngularOrientation().firstAngle;
     }
 
 }

@@ -35,13 +35,13 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        this.newRotation = rot + drive.getPose().getRotation().getDegrees();
+        this.newRotation = rot + drive.getRotation();
     }
 
 
     @Override
     public void execute() {
-        if (newRotation >= drive.getPose().getRotation().getDegrees()) {
+        if (newRotation >= drive.getRotation()) {
             drive.drive(0,0,rotSpeed,0.5,
                     Configuration.AutonFieldRelative);
         }
@@ -59,7 +59,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double distanceToNewPose = Math.abs(drive.getPose().getRotation().getDegrees()
+        double distanceToNewPose = Math.abs(drive.getRotation()
                 - newRotation);
         return distanceToNewPose <= tolerance;
     }

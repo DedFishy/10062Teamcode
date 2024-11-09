@@ -4,6 +4,8 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.commands.auton.AutonDriveRotDistanceCommand;
+import org.firstinspires.ftc.teamcode.commands.auton.AutonDriveXDistanceCommand;
 import org.firstinspires.ftc.teamcode.commands.auton.AutonDriveYDistanceCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
@@ -11,15 +13,17 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 public class AutonCommandBased extends CommandOpMode {
 
     private DriveSubsystem driveSubsystem;
-    private AutonDriveYDistanceCommand driveDistance;
+    private AutonDriveRotDistanceCommand driveDistance;
 
     @Override
     public void initialize() {
 
-        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry, gamepad1);
-        driveDistance = new AutonDriveYDistanceCommand(driveSubsystem,1,0.2);
+        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
+        driveDistance = new AutonDriveRotDistanceCommand(driveSubsystem,90,0.5);
 
         register(driveSubsystem);
         schedule(driveDistance);
+
+
     }
 }

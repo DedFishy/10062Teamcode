@@ -14,7 +14,7 @@ public class AutonDriveXDistanceCommand extends CommandBase {
 
     //Initializes some important values
     private final double driveDistance;
-    private final double tolerance = 0.5;
+    private final double tolerance = 0.1;
     private double newPosition;
     private double xDrive;
 
@@ -34,13 +34,13 @@ public class AutonDriveXDistanceCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        this.newPosition = driveDistance + drive.getPose().getX();
+        this.newPosition = driveDistance + drive.getDistance();
     }
 
 
     @Override
     public void execute() {
-        if (newPosition >= drive.getPose().getX()) {
+        if (newPosition >= drive.getDistance()) {
             drive.drive(xDrive,0,0,0.5,
                     Configuration.AutonFieldRelative);
         }
@@ -58,7 +58,7 @@ public class AutonDriveXDistanceCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double distanceToNewPose = Math.abs(drive.getPose().getX() - newPosition);
+        double distanceToNewPose = Math.abs(drive.getDistance() - newPosition);
         return distanceToNewPose <= tolerance;
     }
 }
