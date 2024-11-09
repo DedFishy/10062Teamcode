@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.commands.auton.AutonDriveYDistanceCommand;
-import org.firstinspires.ftc.teamcode.commands.auton.DriveCircumference;
-import org.firstinspires.ftc.teamcode.commands.teleop.DriveCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 @Autonomous(name = "Auton Command Based")
@@ -16,7 +15,8 @@ public class AutonCommandBased extends CommandOpMode {
 
     @Override
     public void initialize() {
-        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
+
+        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry, gamepad1);
         driveDistance = new AutonDriveYDistanceCommand(driveSubsystem,1,0.2);
 
         register(driveSubsystem);

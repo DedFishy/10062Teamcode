@@ -4,307 +4,286 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.geometry.Pose2d;
-import com.arcrobotics.ftclib.geometry.Rotation2d;
-import com.arcrobotics.ftclib.geometry.Translation2d;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.arcrobotics.ftclib.kinematics.wpilibkinematics.ChassisSpeeds;
-import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveKinematics;
-import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveOdometry;
-import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveWheelSpeeds;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Configuration;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+/**
+ *
+ *
+ **/
 public class DriveSubsystem extends SubsystemBase {
 
 
-    //Internal Stuff.   TOUCH WITH CARE!
-    private MecanumDriveKinematics m_kinematics;
-    private MecanumDriveOdometry m_odometry;
-    private Pose2d m_pose;
-
+    double TopSpeed;
+    double MaxTurnSpeed;
+    double Correction;
+    int HoldDirection;
+    double Pcorrection;
+    Orientation angles;
+    Acceleration gravity;
+    float LeftStickX;
+    float LeftStickY;
+    float RightStickx;
+    double StickHypot;
+    float RobotAngle;
+    double IntStickAngle;
+    double StickAngle;
+    double DriveAngle;
+    double FwdVect;
+    double Turn;
+    double RightSlideVect;
+    double FLint;
+    double RLint;
+    double FRint;
+    double RRint;
+    double ABS_FL;
+    double ABS_FR;
+    double ABS_RL;
+    double ABS_RR;
+    double MaxDrive;
+    double DriveFL;
+    double DriveFR;
+    double DriveRL;
+    double DriveRR;
+    private DcMotor fr_drive;
+    private DcMotor br_drive;
+    private DcMotor bl_drive;
+    private DcMotor fl_drive;
+    private BNO055IMU imu;
+    private HardwareMap hardwareMap;
+    private Telemetry telemetry;
+    private BNO055IMU.Parameters imuParameters;
+    private Gamepad gamepad1;
+    TelemetryPacket packet = new TelemetryPacket();
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    private double CPR = 537.0;
 
     private double fr_motor_offset;
     private double fl_motor_offset;
     private double br_motor_offset;
     private double bl_motor_offset;
-    private double wheelCircumference = 0.052 * Math.PI; //Centimeters = 30.6
 
-    //Pidf Controller init
-    //private final double kp = 0.5;
-    //private final double ki = 0;
-    //private final double kd = 0;
+    public DriveSubsystem (HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1) {
 
-    //PIDFController fr_drive_pidf = new PIDFController(0,0,0,0);
-    //PIDFController fl_drive_pidf = new PIDFController(0,0,0,0);
-    //PIDFController br_drive_pidf = new PIDFController(0,0,0,0);
-    //PIDFController bl_drive_pidf = new PIDFController(0,0,0,0);
-
-    //Robot Drivetrain and Gyroscope
-    private final BNO055IMU imu;
-    private final MotorEx fr_drive;
-    private final MotorEx br_drive;
-    private final MotorEx bl_drive;
-    private final MotorEx fl_drive;
-    private final Telemetry telemetry;
-    private final TelemetryPacket packet = new TelemetryPacket();
-    /**
-     * Creates our drive subsystem
-     */
-    public DriveSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
-        //Robot drivetrain and gyroscope initialization
-        //TODO: Get motor brand and type were using this year!
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        fr_drive = new MotorEx(hardwareMap, "fr_drive", Motor.GoBILDA.RPM_312);
-        fl_drive = new MotorEx(hardwareMap, "fl_drive", Motor.GoBILDA.RPM_312);
-        br_drive = new MotorEx(hardwareMap, "br_drive", Motor.GoBILDA.RPM_312);
-        bl_drive = new MotorEx(hardwareMap, "bl_drive", Motor.GoBILDA.RPM_312);
-        BNO055IMU.Parameters imuParams = new BNO055IMU.Parameters();
-
-        imu.initialize(imuParams);
-
-        fl_drive.setInverted(true);
-        bl_drive.setInverted(true);
-
-
-        fl_drive.setFeedforwardCoefficients(0,0,0);
-        fr_drive.setFeedforwardCoefficients(0,0,0);
-        bl_drive.setFeedforwardCoefficients(0,0,0);
-        br_drive.setFeedforwardCoefficients(0,0,0);
-
-        //Configures the internal pid loop system
-
-        updatePIDCoefficients();
-
-        //fl_drive.setRunMode(Motor.RunMode.VelocityControl);
-        //fr_drive.setRunMode(Motor.RunMode.VelocityControl);
-        //bl_drive.setRunMode(Motor.RunMode.VelocityControl);
-        //br_drive.setRunMode(Motor.RunMode.VelocityControl);
-
-
-
-        m_pose = new Pose2d();
-
+        this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
-        /** The counts per revolution of the motor as well as the distance per pulse.
-         *  AND WHAT IS WRONG WITH THE VARIABLE TYPES??!?!?!?
-         */
+        this.gamepad1 = gamepad1;
+        this.packet = packet;
+        this.dashboard = dashboard;
 
-        //final double wheelCircumference = 0.104 * Math.PI; //Centimeters = 30.6
-        final double DPP = 1;
-        fr_drive.setDistancePerPulse(DPP);
-        fl_drive.setDistancePerPulse(DPP);
-        br_drive.setDistancePerPulse(DPP);
-        bl_drive.setDistancePerPulse(DPP);
+        fr_drive = hardwareMap.get(DcMotor.class, "fr_drive");
+        br_drive = hardwareMap.get(DcMotor.class, "br_drive");
+        bl_drive = hardwareMap.get(DcMotor.class, "bl_drive");
+        fl_drive = hardwareMap.get(DcMotor.class, "fl_drive");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
-        // Locations of the wheels relative to the robot center.
 
-        // x offset is 7.5
-        // y offset is 6.75
-        Translation2d m_frontLeftLocation =
-                new Translation2d(0.1905, 0.17145);
-        Translation2d m_frontRightLocation =
-                new Translation2d(0.1905, -0.17145);
-        Translation2d m_backLeftLocation =
-                new Translation2d(-0.1905, 0.17145);
-        Translation2d m_backRightLocation =
-                new Translation2d(-0.1905, -0.17145);
-
-        // Creating my kinematics object using the wheel locations.
-        m_kinematics = new MecanumDriveKinematics
-                (
-                        m_frontLeftLocation, m_frontRightLocation,
-                        m_backLeftLocation, m_backRightLocation
-                );
-
-        // Creating my odometry object from the kinematics object. Here,
-        // our starting pose is 5 meters along the long end of the field and in the
-        // center of the field along the short end, facing forward.
-        //m_odometry = new MecanumDriveOdometry
-        //        (
-        //                m_kinematics, getGyroHeading(),
-        //                new Pose2d(0.0, 0.0, new Rotation2d()
-        //                )
-        //        );
-
+        fr_drive.getCurrentPosition();
+        fr_drive.setDirection(DcMotor.Direction.FORWARD);
+        br_drive.setDirection(DcMotor.Direction.FORWARD);
+        bl_drive.setDirection(DcMotor.Direction.REVERSE);
+        fl_drive.setDirection(DcMotor.Direction.REVERSE);
+        // Create new IMU Parameters object.
+        imuParameters = new BNO055IMU.Parameters();
+        // Use degrees as angle unit.
+        imuParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imuParameters.loggingEnabled = false;
+        // Initialize IMU.
+        imu.initialize(imuParameters);
+        // Prompt user to press start buton.
+        telemetry.addData("IMU Example", "Press start to continue...");
+        TopSpeed = 0.68;
+        MaxTurnSpeed = 0.5;
+        Correction = 0.25;
+        HoldDirection = 0;
+        Pcorrection = 0.015;
+        telemetry.update();
 
     }
 
+
+
+    /**
+     * Describe this function...
+     */
+    private double powerLimit(double motorPower, double limit) {
+        return limit * motorPower;
+    }
+
+    /**
+     * This function is executed when this Op Mode is selected from the Driver Station.
+     */
     @Override
     public void periodic() {
-        // Get my wheel speeds; assume .getRate() has been
-        // set up to return velocity of the encoder
-        // in meters per second.
-        //MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds
-                //(
-                        //fl_drive.encoder.getRate(), fr_drive.encoder.getRate(),
-                        //bl_drive.encoder.getRate(), br_drive.encoder.getRate()
-                //);
+        // Get absolute orientation
+        // Get acceleration due to force of gravity.
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        gravity = imu.getGravity();
+        LeftStickX = gamepad1.left_stick_x;
+        LeftStickY = -gamepad1.left_stick_y;
+        RightStickx = gamepad1.right_stick_x;
+        StickHypot = Math.sqrt(LeftStickX * LeftStickX + LeftStickY * LeftStickY);
+        if (gamepad1.start) {
+            imu.initialize(imuParameters);
+            HoldDirection = 0;
+        }
+        RobotAngle = -angles.firstAngle;
+        if (StickHypot == 0) {
+            IntStickAngle = 0;
+        } else {
+            IntStickAngle = Math.acos(LeftStickY / StickHypot) / Math.PI * 180;
+        }
+        if (LeftStickX > 0) {
+            StickAngle = IntStickAngle;
+        } else {
+            StickAngle = -IntStickAngle;
+        }
+        DriveAngle = StickAngle - RobotAngle;
+        FwdVect = Math.cos(DriveAngle / 180 * Math.PI);
+        if (StickHypot > 1) {
+            StickHypot = 1;
+        }
+        if (Correction == 0) {
+            HoldDirection = (int) RobotAngle;
+        }
+        if (RightStickx == 0) {
+            Correction = 1;
+        } else {
+            Correction = 0;
+        }
+        if (Correction == 0) {
+            Turn = RightStickx * MaxTurnSpeed;
+        } else {
+            if (HoldDirection - RobotAngle > 180) {
+                Turn = ((HoldDirection - RobotAngle) - 360) * Pcorrection;
+            } else if (HoldDirection - RobotAngle < -180) {
+                Turn = ((HoldDirection - RobotAngle) + 360) * Pcorrection;
+            } else {
+                Turn = (HoldDirection - RobotAngle) * Pcorrection;
+            }
+        }
+        RightSlideVect = Math.sin(DriveAngle / 180 * Math.PI);
+        FLint = FwdVect + RightSlideVect + Turn;
+        RLint = FwdVect + (Turn - RightSlideVect);
+        FRint = FwdVect - (RightSlideVect + Turn);
+        RRint = FwdVect + (RightSlideVect - Turn);
+        ABS_FL = Math.abs(FLint);
+        ABS_FR = Math.abs(FRint);
+        ABS_RL = Math.abs(RLint);
+        ABS_RR = Math.abs(RRint);
+        MaxDrive = ABS_FL;
+        if (MaxDrive < ABS_FR) {
+            MaxDrive = ABS_FR;
+        }
+        if (MaxDrive < ABS_RL) {
+            MaxDrive = ABS_RL;
+        }
+        if (MaxDrive < ABS_RR) {
+            MaxDrive = ABS_RR;
+        }
+        DriveFL = (FLint / MaxDrive) * StickHypot * TopSpeed;
+        if (StickHypot == 0) {
+            DriveFL = Turn;
+        }
+        DriveFR = (FRint / MaxDrive) * StickHypot * TopSpeed;
+        if (StickHypot == 0) {
+            DriveFR = -Turn;
+        }
+        DriveRL = (RLint / MaxDrive) * StickHypot * TopSpeed;
+        if (StickHypot == 0) {
+            DriveRL = Turn;
+        }
+        DriveRR = (RRint / MaxDrive) * StickHypot * TopSpeed;
+        if (StickHypot == 0) {
+            DriveRR = -Turn;
+        }
 
-        // Get my gyro angle.
-        Rotation2d gyroAngle = getGyroHeading();
 
-        // Update the pose
-        double unixTime = System.currentTimeMillis() / 1000.0;
-        //m_pose = m_odometry.updateWithTime(unixTime, gyroAngle, wheelSpeeds);
-    }
+        telemetry.addData("Robot Angle", RobotAngle);
+        telemetry.addData("StickAngle", StickAngle);
+        telemetry.addData("DriveAngle", DriveAngle);
+        telemetry.addData("Turn", Turn);
+        telemetry.addData("FwdVect", FwdVect);
+        telemetry.addData("SlideVect", RightSlideVect);
+        telemetry.addData("FrontRight", DriveFR);
+        telemetry.addData("FrontLeft", DriveFL);
+        telemetry.addData("Rear Right", DriveRR);
+        telemetry.addData("Rear Left", DriveRL);
+        telemetry.addData("MaxDrive", MaxDrive);
+        bl_drive.setPower(DriveRL);
+        fr_drive.setPower(DriveFR);
+        fl_drive.setPower(DriveFL);
+        br_drive.setPower(DriveRR);
 
-    private Rotation2d getGyroHeading() {
+        // FTC dashboard
 
-        Rotation2d rot2d;
-        rot2d = new Rotation2d(imu.getAngularOrientation().firstAngle + Math.toRadians(90));
-        return rot2d;
-    }
+        packet.put("Robot Angle", RobotAngle);
+        packet.put("Stick Angle", StickAngle);
+        packet.put("Drive Angle", DriveAngle);
+        packet.put("Turn", Turn);
+        packet.put("Fwd Vect", FwdVect);
+        packet.put("SlideVect", RightSlideVect);
+        packet.put("Front Right Speed", DriveFR);
+        packet.put("Front Left Speed", DriveFL);
+        packet.put("Rear Right Speed", DriveRR);
+        packet.put("Rear Left Speed", DriveRL);
+        packet.put("Max Drive", MaxDrive);
+        packet.put("Front Right Encoder", fr_drive.getCurrentPosition());
+        packet.put("Front Left Encoder", -fl_drive.getCurrentPosition());
+        packet.put("Rear Right Encoder", br_drive.getCurrentPosition());
+        packet.put("Rear Left Encoder", bl_drive.getCurrentPosition());
+        packet.put("Distance", getDistance());
+        dashboard.sendTelemetryPacket(packet);
 
-    public Pose2d getPose() {
-        return m_pose;
+        // Display gravitational acceleration.
+        telemetry.update();
     }
 
     public void drive(double x_speed, double y_speed, double rot_speed,
                       double maxTranslationSpeed, boolean fieldRelative) {
-        updatePIDCoefficients();
-        // The desired field relative speed here is 2 meters per second
-        // toward the opponent's alliance station wall, and 2 meters per
-        // second toward the left field boundary. The desired rotation
-        // is a quarter of a rotation per second counterclockwise.
-        // The current robot angle is 45 degrees.
-        ChassisSpeeds speeds;
-        if (fieldRelative) {
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                    x_speed, y_speed, rot_speed, getGyroHeading()
-            );
-        } else {
-            speeds = new ChassisSpeeds(
-                    x_speed, y_speed, rot_speed
-            );
-        }
 
-
-
-        // Now use this in our kinematics
-        MecanumDriveWheelSpeeds wheelSpeeds =
-                m_kinematics.toWheelSpeeds(speeds);
-
-
-        //Converting MPS to CPS
-        double fl_desiredWheelSpeedRPS = (wheelSpeeds.frontLeftMetersPerSecond /
-                wheelCircumference);
-
-        double fr_desiredWheelSpeedRPS = (wheelSpeeds.frontRightMetersPerSecond /
-                wheelCircumference);
-
-        double bl_desiredWheelSpeedRPS = (wheelSpeeds.rearLeftMetersPerSecond /
-                wheelCircumference);
-
-        double br_desiredWheelSpeedRPS = (wheelSpeeds.rearRightMetersPerSecond /
-                wheelCircumference);
-
-        //fl_drive.set(fl_desiredWheelSpeedRPS);
-        //fr_drive.set(fr_desiredWheelSpeedRPS);
-        //bl_drive.set(bl_desiredWheelSpeedRPS);
-        //br_drive.set(br_desiredWheelSpeedRPS);
-
-        fl_drive.set(1 * (wheelSpeeds.frontLeftMetersPerSecond / maxTranslationSpeed));
-        fr_drive.set(1 * (wheelSpeeds.frontRightMetersPerSecond / maxTranslationSpeed));
-        bl_drive.set(1 * (wheelSpeeds.rearLeftMetersPerSecond / maxTranslationSpeed));
-        br_drive.set(1 * (wheelSpeeds.rearRightMetersPerSecond / maxTranslationSpeed));
-
-        //TODO: ADD desired wheel CPS speed current wheel speed CPS to telemetry
-        telemetry.addData("X Speed", x_speed);
-        telemetry.addData("Y Speed", y_speed);
-        telemetry.addData("Rotation Speed", rot_speed);
-        telemetry.addData("Front Left Wheel Speed", fl_drive.encoder.getRate() /
-                fl_drive.getCPR());
-        telemetry.addData("Front Right Wheel Speed",fr_drive.encoder.getRate() /
-                fr_drive.getCPR());
-        telemetry.addData("Back Left Wheel Speed", bl_drive.encoder.getRate() /
-                bl_drive.getCPR());
-        telemetry.addData("Back Right Wheel Speed",br_drive.encoder.getRate() /
-                br_drive.getCPR());
-        telemetry.addData("Front Right Encoder Revolutions",
-                fr_drive.encoder.getRevolutions());
-        telemetry.addData("Front Left Encoder Revolutions",
-                fl_drive.encoder.getRevolutions());
-        telemetry.addData("Back Right Encoder Revolutions",
-                br_drive.encoder.getRevolutions());
-        telemetry.addData("Back Left Encoder Revolutions",
-                bl_drive.encoder.getRevolutions());
-        telemetry.addData("FR Desired Wheel RPS speed", fr_desiredWheelSpeedRPS);
-        telemetry.addData("FL Desired Wheel RPS speed", fl_desiredWheelSpeedRPS);
-        telemetry.addData("Back Right Desired Wheel RPS speed", br_desiredWheelSpeedRPS);
-        telemetry.addData("Back Left Desired Wheel RPS speed", bl_desiredWheelSpeedRPS
-        );
-        //telemetry.addData("Current Pose Y", m_pose.getY());
-        //telemetry.addData("Current Pose X", m_pose.getX());
-        //telemetry.addData("Current Pose Rotation", m_pose.getRotation().getDegrees());
-        telemetry.addData("Distance Y (In meters)", getDistance());
-        telemetry.update();
-
-        // FTC Dashboard Telemetry Stuff
-        packet.put("Front Left Wheel Speed", fl_drive.encoder.getRate() /
-                fl_drive.getCPR());
-        packet.put("Front Right Wheel Speed",fr_drive.encoder.getRate() /
-                fr_drive.getCPR());
-        packet.put("Back Left Wheel Speed", bl_drive.encoder.getRate() /
-                bl_drive.getCPR());
-        packet.put("Back Right Wheel Speed", br_drive.encoder.getRate() /
-                br_drive.getCPR());
-        packet.put("FR Desired Wheel RPS speed", fr_desiredWheelSpeedRPS);
-        packet.put("FL Desired Wheel RPS speed", fl_desiredWheelSpeedRPS);
-        packet.put("Back Right Desired Wheel RPS speed", br_desiredWheelSpeedRPS);
-        packet.put("Back Left Desired Wheel RPS speed", bl_desiredWheelSpeedRPS);
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        dashboard.sendTelemetryPacket(packet);
     }
 
-    public double encoderRevolutions(){
-        telemetry.addData("Encoder Revolutions", Math.abs(fr_drive.encoder.getRevolutions()));
-        return Math.abs(fr_drive.encoder.getRevolutions());
-    }
+    public Pose2d getPose() {
 
-    /**
-     * Our own encoder system
-     */
+        return new Pose2d();
+    }
 
     public double getDistance() {
-        double fr_encoder_current_position_with_offset = fr_drive.encoder.getRevolutions() -
+        double fr_encoder_current_position_with_offset = fr_drive.getCurrentPosition() -
                 fr_motor_offset;
-        double fl_encoder_current_position_with_offset = fl_drive.encoder.getRevolutions() -
+        double fl_encoder_current_position_with_offset = fl_drive.getCurrentPosition() -
                 fl_motor_offset;
-        double br_encoder_current_position_with_offset = br_drive.encoder.getRevolutions() -
+        double br_encoder_current_position_with_offset = br_drive.getCurrentPosition() -
                 br_motor_offset;
-        double bl_encoder_current_position_with_offset = bl_drive.encoder.getRevolutions() -
+        double bl_encoder_current_position_with_offset = bl_drive.getCurrentPosition() -
                 bl_motor_offset;
 
         double average = ((fr_encoder_current_position_with_offset +
                 -fl_encoder_current_position_with_offset +
                 br_encoder_current_position_with_offset +
-                bl_encoder_current_position_with_offset) / 4) * wheelCircumference;
+                bl_encoder_current_position_with_offset) / 4) / CPR;
         return -average;
     }
 
     public void clearEncoderPulse() {
-        fr_motor_offset = fr_drive.encoder.getRevolutions();
-        fl_motor_offset = fl_drive.encoder.getRevolutions();
-        br_motor_offset =  br_drive.encoder.getRevolutions();
-        bl_motor_offset = bl_drive.encoder.getRevolutions();
+        fr_motor_offset = fr_drive.getCurrentPosition();
+        fl_motor_offset = fl_drive.getCurrentPosition();
+        br_motor_offset =  br_drive.getCurrentPosition();
+        bl_motor_offset = bl_drive.getCurrentPosition();
     }
-    public void updatePIDCoefficients() {
-        double kp = Configuration.pidCoefficients.p;
-        double ki = Configuration.pidCoefficients.i;
-        double kd = Configuration.pidCoefficients.d;
-        fl_drive.setVeloCoefficients(kp,ki,kd);
-        fr_drive.setVeloCoefficients(kp,ki,kd);
-        bl_drive.setVeloCoefficients(kp,ki,kd);
-        br_drive.setVeloCoefficients(kp,ki,kd);
-        //telemetry.addData("KP", kp);
-        packet.put("KP", kp);
-        packet.put("FL Actual Kp value", fl_drive.getVeloCoefficients()[0]);
-        packet.put("FR Actual Kp value", fr_drive.getVeloCoefficients()[0]);
-        packet.put("BL Actual Kp value", bl_drive.getVeloCoefficients()[0]);
-        packet.put("BR Actual Kp value", br_drive.getVeloCoefficients()[0]);
-    }
+
 }
