@@ -35,6 +35,7 @@ public class AutonDriveYDistanceCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        drive.clearEncoderPulse();
         this.newPosition = driveDistance + drive.getDistance();
     }
 

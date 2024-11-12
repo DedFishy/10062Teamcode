@@ -35,6 +35,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        drive.resetImu();
         this.newRotation = rot + drive.getRotation();
     }
 

@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 /**
  * The command to drive along the x axis
  */
+@Deprecated
 public class AutonDriveXDistanceCommand extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final DriveSubsystem drive;

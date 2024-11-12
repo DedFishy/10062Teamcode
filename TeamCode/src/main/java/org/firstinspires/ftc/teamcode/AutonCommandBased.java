@@ -19,7 +19,7 @@ public class AutonCommandBased extends CommandOpMode {
     public void initialize() {
 
         driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
-        driveDistance = new AutonDriveRotDistanceCommand(driveSubsystem,90,0.5);
+        driveDistance = new AutonDriveRotDistanceCommand(driveSubsystem,90);
 
         register(driveSubsystem);
         schedule(driveDistance);
