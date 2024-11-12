@@ -16,7 +16,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     //Initializes some important values
     private final double rot;
-    private final double tolerance = 0.5;
+    private final double tolerance = 5;
     private double newRotation;
     private double rotSpeed;
     private final double rateOfDecay = 1;
@@ -68,7 +68,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-
+        drive.drive(0,0,0,0,false);
     }
 
 
