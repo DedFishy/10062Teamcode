@@ -19,7 +19,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
     private final double tolerance = 5;
     private double newRotation;
     private double rotSpeed;
-    private final double rateOfDecay = 1.5;
+    private final double rateOfDecay = 2;
 
     private final TelemetryPacket packet = new TelemetryPacket();
 
@@ -49,6 +49,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
     public void execute() {
         rotSpeed = Math.signum(drive.getRotation() - newRotation) * Math.pow(drive.getRotation()
                 - newRotation, rateOfDecay) / Math.pow (180, rateOfDecay);
+
         if (newRotation >= drive.getRotation()) {
             drive.drive(0,0,rotSpeed,0.5,
                     Configuration.AutonFieldRelative);
