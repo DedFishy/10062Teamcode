@@ -4,10 +4,10 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Configuration;
-import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ExtensionMechanismSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GrabberMechanismSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PivotMechanismSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.PivotMechanismSubsystemWPid;
 
 public class MechanismCommand extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
@@ -30,13 +30,13 @@ public class MechanismCommand extends CommandBase {
      *  @param extension
      *  @param grabber
      *  @param gamepad2
-     *  The subsystem used by this command.
+     *  The subsystems and gamepad used by this command.
      */
 
 
     public MechanismCommand(PivotMechanismSubsystem pivot,
                             ExtensionMechanismSubsystem extension,
-                            GrabberMechanismSubsystem grabber,Gamepad gamepad2) {
+                            GrabberMechanismSubsystem grabber, Gamepad gamepad2) {
         this.gamepad2 = gamepad2;
         this.pivot = pivot;
         this.extension = extension;
@@ -59,6 +59,7 @@ public class MechanismCommand extends CommandBase {
 
         pivot.setPivotPower(pivotPower);
 
+        // The Extension code used to control arm used to extend and such
         if (gamepad2.right_bumper) {
             extension.setExtensionPower(.5);
         } else if (gamepad2.left_bumper) {
@@ -66,11 +67,16 @@ public class MechanismCommand extends CommandBase {
         } else {
             extension.setExtensionPower(0);
         }
+
+        // Grabber Code
         if (gamepad2.b) {
-            grabber.setGrabberPower(.5);
+            // Pulls The Suff In
+            grabber.setGrabberPower(1);
         } else if (gamepad2.y) {
-            grabber.setGrabberPower(-.2);
+            // Pushes The Stuff out
+            grabber.setGrabberPower(-0.5);
         } else {
+            // Makes sure it's not active most of the time unless you need to use it.
             grabber.setGrabberPower(0);
         }
     }
