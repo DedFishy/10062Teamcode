@@ -23,9 +23,9 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
      *
      * @param subsystem The subsystem used by this command.
      */
-    public AutonDriveRotDistanceCommand(DriveSubsystem subsystem, double rot, double rotSpeed) {
+    public AutonDriveRotDistanceCommand(DriveSubsystem subsystem, double rot){
         drive = subsystem;
-        this.rotSpeed = rotSpeed;
+       
         this.rot = rot;
 
         //Use addRequirements() here to declare subsystem dependencies.
@@ -41,6 +41,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     @Override
     public void execute() {
+        rotSpeed = Math.signum(drive.getRotation() - newRotation) * Math.pow(drive.getRotation() - newRotation, 2) / 129600;
         if (newRotation >= drive.getRotation()) {
             drive.drive(0,0,rotSpeed,0.5,
                     Configuration.AutonFieldRelative);
