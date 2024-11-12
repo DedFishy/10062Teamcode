@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.geometry.Pose2d;
@@ -78,6 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
     private double fl_motor_offset;
     private double br_motor_offset;
     private double bl_motor_offset;
+    private double imu_offset = 0;
 
     public DriveSubsystem (HardwareMap hardwareMap, Telemetry telemetry) {
 
@@ -92,6 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
         fl_drive = hardwareMap.get(DcMotor.class, "fl_drive");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         fr_drive.getCurrentPosition();
         fr_drive.setDirection(DcMotor.Direction.FORWARD);
@@ -228,23 +231,23 @@ public class DriveSubsystem extends SubsystemBase {
 
         // FTC dashboard
 
-        packet.put("Robot Angle", RobotAngle);
-        packet.put("Stick Angle", StickAngle);
-        packet.put("Drive Angle", DriveAngle);
-        packet.put("Turn", Turn);
-        packet.put("Fwd Vect", FwdVect);
-        packet.put("SlideVect", RightSlideVect);
-        packet.put("Front Right Speed", DriveFR);
-        packet.put("Front Left Speed", DriveFL);
-        packet.put("Rear Right Speed", DriveRR);
-        packet.put("Rear Left Speed", DriveRL);
-        packet.put("Max Drive", MaxDrive);
-        packet.put("Front Right Encoder", fr_drive.getCurrentPosition());
-        packet.put("Front Left Encoder", -fl_drive.getCurrentPosition());
-        packet.put("Rear Right Encoder", br_drive.getCurrentPosition());
-        packet.put("Rear Left Encoder", bl_drive.getCurrentPosition());
-        packet.put("Distance", getDistance());
-        dashboard.sendTelemetryPacket(packet);
+        //packet.put("Robot Angle", RobotAngle);
+        //packet.put("Stick Angle", StickAngle);
+        //packet.put("Drive Angle", DriveAngle);
+        //packet.put("Turn", Turn);
+        //packet.put("Fwd Vect", FwdVect);
+        //packet.put("SlideVect", RightSlideVect);
+        //packet.put("Front Right Speed", DriveFR);
+        //packet.put("Front Left Speed", DriveFL);
+        //packet.put("Rear Right Speed", DriveRR);
+        //packet.put("Rear Left Speed", DriveRL);
+        //packet.put("Max Drive", MaxDrive);
+        //packet.put("Front Right Encoder", fr_drive.getCurrentPosition());
+        //packet.put("Front Left Encoder", -fl_drive.getCurrentPosition());
+        //packet.put("Rear Right Encoder", br_drive.getCurrentPosition());
+        //packet.put("Rear Left Encoder", bl_drive.getCurrentPosition());
+        //packet.put("Distance", getDistance());
+        //dashboard.sendTelemetryPacket(packet);
 
         // Display gravitational acceleration.
         telemetry.update();
@@ -281,14 +284,20 @@ public class DriveSubsystem extends SubsystemBase {
         br_motor_offset =  br_drive.getCurrentPosition();
         bl_motor_offset = bl_drive.getCurrentPosition();
     }
+    /**
+     *  Resets The imu
+     **/
 
     public void resetImu() {
         imu.initialize(imuParameters);
+        imu_offset = imu.getAngularOrientation().firstAngle;
         HoldDirection = 0;
     }
-
+    /**
+     *  Get's The imu's current rotation
+     **/
     public double getRotation() {
-        return imu.getAngularOrientation().firstAngle;
+        return imu.getAngularOrientation().firstAngle - imu_offset;
     }
 
 }

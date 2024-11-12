@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.commands.auton;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.Configuration;
@@ -17,6 +19,9 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
     private final double tolerance = 0.5;
     private double newRotation;
     private double rotSpeed;
+    private final double rateOfDecay = 2;
+
+    private final TelemetryPacket packet = new TelemetryPacket();
 
     /**
      * Creates a new ExampleCommand.
@@ -42,7 +47,8 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     @Override
     public void execute() {
-        rotSpeed = Math.signum(drive.getRotation() - newRotation) * Math.pow(drive.getRotation() - newRotation, 2) / 129600;
+        rotSpeed = Math.signum(drive.getRotation() - newRotation) * Math.pow(drive.getRotation()
+                - newRotation, rateOfDecay) / Math.pow (180, rateOfDecay);
         if (newRotation >= drive.getRotation()) {
             drive.drive(0,0,rotSpeed,0.5,
                     Configuration.AutonFieldRelative);
@@ -51,6 +57,13 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
             drive.drive(0,0,-rotSpeed,0.5,
                     Configuration.AutonFieldRelative);
         }
+
+        packet.put("Rotation: Rotation Speed", rotSpeed);
+        packet.put("Rotation: Current Rotation", drive.getRotation());
+        packet.put("Rotation: New Rotation", newRotation);
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        dashboard.sendTelemetryPacket(packet);
     }
 
     @Override
