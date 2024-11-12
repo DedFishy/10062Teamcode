@@ -19,7 +19,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
     private final double tolerance = 0.5;
     private double newRotation;
     private double rotSpeed;
-    private final double rateOfDecay = 2;
+    private final double rateOfDecay = 1;
 
     private final TelemetryPacket packet = new TelemetryPacket();
 
