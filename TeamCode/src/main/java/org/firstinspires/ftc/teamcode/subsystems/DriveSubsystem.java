@@ -253,6 +253,15 @@ public class DriveSubsystem extends SubsystemBase {
         telemetry.update();
     }
 
+    /**
+     * Drives at a set power
+     *
+     * @param rot_speed
+     * @param fieldRelative
+     * @param y_speed
+     * @param x_speed
+     * @param maxTranslationSpeed
+     */
     public void drive(double x_speed, double y_speed, double rot_speed,
                       double maxTranslationSpeed, boolean fieldRelative) {
         translationX = x_speed;
