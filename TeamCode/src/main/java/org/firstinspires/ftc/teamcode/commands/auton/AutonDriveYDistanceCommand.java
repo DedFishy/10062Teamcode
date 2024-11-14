@@ -7,7 +7,12 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 /**
  * The command to drive along the y axis
+ * Rotation Auton Command {@link org.firstinspires.ftc.teamcode.commands.auton.AutonDriveRotDistanceCommand}
+ * Wait command {@link org.firstinspires.ftc.teamcode.commands.auton.WaitCommand}
+ *
+ * @author evokerking1, Mentors (DedFishy, Jetvac2)
  */
+
 public class AutonDriveYDistanceCommand extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final DriveSubsystem drive;

@@ -3,7 +3,11 @@ package org.firstinspires.ftc.teamcode.commands.auton;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 /**
- * An example command that uses an example subsystem.
+ * The command to drive along the y axis
+ * Rotation Auton Command {@link org.firstinspires.ftc.teamcode.commands.auton.AutonDriveRotDistanceCommand}
+ * Drive along the Y axis command {@link org.firstinspires.ftc.teamcode.commands.auton.AutonDriveYDistanceCommand}
+ *
+ * @author evokerking1, Mentors (DedFishy, Jetvac2)
  */
 public class WaitCommand extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})

@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 /**
  * The command to drive along the x axis
+ * @deprecated It was deprecated because it was very buggy.
  */
 @Deprecated
 public class AutonDriveXDistanceCommand extends CommandBase {

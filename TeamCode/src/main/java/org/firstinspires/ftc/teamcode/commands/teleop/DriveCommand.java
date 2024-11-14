@@ -19,13 +19,15 @@ public class DriveCommand extends CommandBase {
     //TODO: Correct These Values
     //Initializes some important values
     private final double maxTranslationSpeed = Configuration.maxTranslationSpeed;
-    private final double maxRotSpeed = 2 * Math.PI;
+    private final double maxRotSpeed = 2;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
+     * @param gamepad1 Player 1's controller
      */
+
     public DriveCommand(DriveSubsystem subsystem, Gamepad gamepad1) {
         this.gamepad1 = gamepad1;
         m_DriveSubsystem = subsystem;
@@ -43,9 +45,9 @@ public class DriveCommand extends CommandBase {
     @Override
     public void execute() {
         m_DriveSubsystem.drive(
-                gamepad1.left_stick_y * maxTranslationSpeed,
-                -gamepad1.left_stick_x  * maxTranslationSpeed,
-                gamepad1.right_stick_x  * maxRotSpeed, maxTranslationSpeed,
+                gamepad1.left_stick_x * maxTranslationSpeed,
+                -gamepad1.left_stick_y  * maxTranslationSpeed,
+                gamepad1.right_stick_y  * maxRotSpeed, maxTranslationSpeed,
                 Configuration.TeleopFieldRelative);
         if (gamepad1.start) {
             m_DriveSubsystem.resetImu();

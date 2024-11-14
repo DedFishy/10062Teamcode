@@ -114,7 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
         MaxTurnSpeed = 0.5;
         Correction = 0.25;
         HoldDirection = 0;
-        Pcorrection = 0.015;
+        Pcorrection = 0.01;
         telemetry.update();
 
     }
