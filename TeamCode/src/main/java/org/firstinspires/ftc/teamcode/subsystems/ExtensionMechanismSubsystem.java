@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class ExtensionMechanismSubsystem extends SubsystemBase {
     private MotorEx extensionMechanism;
-    private final double extensionLimit = 1;
+    private final double extensionLimit = 2.5;
 
-    /** Initializes The Subsystem **/
+    /** Initializes The Subsystem */
 
     public ExtensionMechanismSubsystem(HardwareMap hardwareMap) {
         this.extensionMechanism = new MotorEx(hardwareMap, "extension", Motor.GoBILDA.RPM_435);
@@ -25,13 +25,13 @@ public class ExtensionMechanismSubsystem extends SubsystemBase {
     /** Sets The Power to Something **/
 
     public void setExtensionPower(double power) {
-        //if (extensionMechanism.encoder.getRevolutions() >= extensionLimit && power >= 0) {
-            //extensionMechanism.set(0);
-       // } else if (extensionMechanism.encoder.getRevolutions() <= 0 && power <= 0) {
-            //extensionMechanism.set(0);
-        //} else {
-            extensionMechanism.set(power * .25);
-        //}
+        if (extensionMechanism.encoder.getRevolutions() >= extensionLimit && power >= 0) {
+            extensionMechanism.set(0);
+        } else if (extensionMechanism.encoder.getRevolutions() <= 0 && power <= 0) {
+            extensionMechanism.set(0);
+        } else {
+            extensionMechanism.set(power);
+        }
     }
 
     public double getExtensionRevolutions() {
