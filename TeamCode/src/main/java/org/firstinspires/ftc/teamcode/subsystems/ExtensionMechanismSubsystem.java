@@ -17,12 +17,24 @@ public class ExtensionMechanismSubsystem extends SubsystemBase {
         extensionMechanism.setInverted(true);
     }
 
+    @Override
+    public void periodic() {
+
+    }
+
     /** Sets The Power to Something **/
+
     public void setExtensionPower(double power) {
-        if (extensionMechanism.encoder.getRevolutions() >= extensionLimit) {
-            extensionMechanism.set(0);
-        } else {
-            extensionMechanism.set(power);
-        }
+        //if (extensionMechanism.encoder.getRevolutions() >= extensionLimit && power >= 0) {
+            //extensionMechanism.set(0);
+       // } else if (extensionMechanism.encoder.getRevolutions() <= 0 && power <= 0) {
+            //extensionMechanism.set(0);
+        //} else {
+            extensionMechanism.set(power * .25);
+        //}
+    }
+
+    public double getExtensionRevolutions() {
+        return extensionMechanism.encoder.getRevolutions();
     }
 }

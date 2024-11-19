@@ -1,12 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auton;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.commands.auton.AutonDriveRotDistanceCommand;
-import org.firstinspires.ftc.teamcode.commands.auton.AutonDriveXDistanceCommand;
-import org.firstinspires.ftc.teamcode.commands.auton.AutonDriveYDistanceCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 @Autonomous(name = "Auton Command Based")

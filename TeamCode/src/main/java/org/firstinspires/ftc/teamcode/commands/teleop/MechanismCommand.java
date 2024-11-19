@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode.commands.teleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Configuration;
 import org.firstinspires.ftc.teamcode.subsystems.ExtensionMechanismSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.GrabberMechanismSubsystem;
@@ -17,6 +21,9 @@ public class MechanismCommand extends CommandBase {
 
     //Make a gamepad named gamepad1
     private final Gamepad gamepad2;
+    private Telemetry telemetry;
+    private final TelemetryPacket packet = new TelemetryPacket();
+    FtcDashboard dashboard = FtcDashboard.getInstance();
 
     //TODO: Correct These Values
     //Initializes some important values
@@ -42,6 +49,9 @@ public class MechanismCommand extends CommandBase {
         this.pivot = pivot;
         this.extension = extension;
         this.grabber = grabber;
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(pivot, extension, grabber);
@@ -80,6 +90,8 @@ public class MechanismCommand extends CommandBase {
             // Makes sure it's not active most of the time unless you need to use it.
             grabber.setGrabberPower(0);
         }
+        telemetry.addData("Extension: Current Revolutions",
+                extension.getExtensionRevolutions());
     }
 
     @Override

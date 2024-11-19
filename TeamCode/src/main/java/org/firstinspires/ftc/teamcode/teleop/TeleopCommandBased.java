@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleop;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,7 +11,9 @@ import org.firstinspires.ftc.teamcode.subsystems.GrabberMechanismSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PivotMechanismSubsystem;
 
 @TeleOp(name = "Teleop Command Based")
+//@Disabled
 public class TeleopCommandBased extends CommandOpMode {
+
 
     private DriveSubsystem driveSubsystem;
     private DriveCommand driveCommand;

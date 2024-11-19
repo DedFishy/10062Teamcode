@@ -17,5 +17,6 @@ public class PivotMechanismSubsystem extends SubsystemBase {
 
     public void setPivotPower(double power) {
         pivotMotor.set(power);
+
     }
 }

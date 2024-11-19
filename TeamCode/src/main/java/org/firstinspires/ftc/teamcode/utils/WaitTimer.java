@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 /**
- * An example command that uses an example subsystem.
+ * A sleep command
  */
 public class WaitTimer {
 
