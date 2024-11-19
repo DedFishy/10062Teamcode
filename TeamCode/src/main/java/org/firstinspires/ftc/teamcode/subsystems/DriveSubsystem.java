@@ -152,7 +152,7 @@ public class DriveSubsystem extends SubsystemBase {
         } else {
             StickAngle = -IntStickAngle;
         }
-        DriveAngle = StickAngle - RobotAngle;
+        DriveAngle = StickAngle - RobotAngle - imu_offset;
         FwdVect = Math.cos(DriveAngle / 180 * Math.PI);
         if (StickHypot > 1) {
             StickHypot = 1;
@@ -281,9 +281,9 @@ public class DriveSubsystem extends SubsystemBase {
                 bl_motor_offset;
 
         double average = ((fr_encoder_current_position_with_offset +
-                -fl_encoder_current_position_with_offset +
+                //-fl_encoder_current_position_with_offset +
                 br_encoder_current_position_with_offset +
-                bl_encoder_current_position_with_offset) / 4) / CPR;
+                bl_encoder_current_position_with_offset) / 3) / CPR;
         return -average;
     }
 
@@ -307,6 +307,12 @@ public class DriveSubsystem extends SubsystemBase {
      **/
     public double getRotation() {
         return imu.getAngularOrientation().firstAngle - imu_offset;
+    }
+
+    /***/
+    public void setImuOffset(double offset) {
+        imu_offset = offset;
+
     }
 
 }

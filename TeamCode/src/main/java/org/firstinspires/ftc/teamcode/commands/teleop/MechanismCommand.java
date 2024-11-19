@@ -93,6 +93,8 @@ public class MechanismCommand extends CommandBase {
         packet.put("Extension: Current Revolutions",
                 extension.getExtensionRevolutions());
 
+
+        dashboard.sendTelemetryPacket(packet);
     }
 
     @Override
