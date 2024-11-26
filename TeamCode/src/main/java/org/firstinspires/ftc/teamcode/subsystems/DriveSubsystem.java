@@ -306,7 +306,9 @@ public class DriveSubsystem extends SubsystemBase {
      *  Get's The imu's current rotation
      **/
     public double getRotation() {
-        return imu.getAngularOrientation().firstAngle - imu_offset;
+        return  -imu.getAngularOrientation
+                (AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle
+                - imu_offset;
     }
 
     /***/

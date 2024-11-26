@@ -20,7 +20,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     //Initializes some important values
     private final double rot;
-    private final double tolerance = 5;
+    private final double tolerance = 0.1;
     private double newRotation;
     private double rotSpeed;
     private final double rateOfDecay = 2;
@@ -31,6 +31,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
+     * @param rot Distance to rotate in radians
      */
     public AutonDriveRotDistanceCommand(DriveSubsystem subsystem, double rot){
         drive = subsystem;
@@ -51,8 +52,8 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     @Override
     public void execute() {
-        rotSpeed = Math.signum(drive.getRotation() - newRotation) * Math.pow(drive.getRotation()
-                - newRotation, rateOfDecay) / Math.pow (180, rateOfDecay);
+        rotSpeed = 0.2; //Math.signum(drive.getRotation() - newRotation) * Math.pow(drive.getRotation()
+                //- newRotation, rateOfDecay) / Math.pow (180, rateOfDecay);
 
         if (newRotation >= drive.getRotation()) {
             drive.drive(0,0,rotSpeed,0.5,

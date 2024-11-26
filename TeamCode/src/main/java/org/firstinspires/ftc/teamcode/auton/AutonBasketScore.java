@@ -35,9 +35,9 @@ public class AutonBasketScore extends CommandOpMode {
 
         this.autonCommandGroup = new SequentialCommandGroup(
                 new AutonDriveYDistanceCommand(drive, 1, 0.5),
-                new AutonDriveRotDistanceCommand(drive, 135),
+                new AutonDriveRotDistanceCommand(drive, 2.35619),
                 new AutonDriveYDistanceCommand(drive, 1, 0.5),
-                new AutonPivotRaise(pivot, 0.25),
+                new AutonPivotRaise(pivot, 0.1),
                 new AutonExtend(extension, 2),
                 new AutonGrabberRelease(grabber),
                 new AutonRetract(extension, 2),
