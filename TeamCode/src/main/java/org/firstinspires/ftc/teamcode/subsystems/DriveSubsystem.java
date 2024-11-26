@@ -307,7 +307,7 @@ public class DriveSubsystem extends SubsystemBase {
      **/
     public double getRotation() {
         return  -imu.getAngularOrientation
-                (AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle
+                (AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle
                 - imu_offset;
     }
 

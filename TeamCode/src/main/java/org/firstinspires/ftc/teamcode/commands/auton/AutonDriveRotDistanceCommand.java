@@ -52,7 +52,7 @@ public class AutonDriveRotDistanceCommand extends CommandBase {
 
     @Override
     public void execute() {
-        rotSpeed = 0.2; //Math.signum(drive.getRotation() - newRotation) * Math.pow(drive.getRotation()
+        rotSpeed = 0.7; //Math.signum(drive.getRotation() - newRotation) * Math.pow(drive.getRotation()
                 //- newRotation, rateOfDecay) / Math.pow (180, rateOfDecay);
 
         if (newRotation >= drive.getRotation()) {
