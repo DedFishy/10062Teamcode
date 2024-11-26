@@ -81,11 +81,11 @@ public class MechanismCommand extends CommandBase {
 
         // Grabber Code
         if (gamepad2.b) {
-            // Pulls The Suff In
-            grabber.setGrabberPower(1);
-        } else if (gamepad2.y) {
             // Pushes The Stuff out
-            grabber.setGrabberPower(-0.5);
+            grabber.setGrabberPower(0.5);
+        } else if (gamepad2.y) {
+            // Pulls The Stuff In
+            grabber.setGrabberPower(-1);
         } else {
             // Makes sure it's not active most of the time unless you need to use it.
             grabber.setGrabberPower(0);

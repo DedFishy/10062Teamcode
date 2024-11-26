@@ -19,4 +19,8 @@ public class PivotMechanismSubsystem extends SubsystemBase {
         pivotMotor.set(power);
 
     }
+
+    public double getPivotPosition() {
+        return pivotMotor.encoder.getRevolutions();
+    }
 }
