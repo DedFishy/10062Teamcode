@@ -27,6 +27,8 @@ public class AutonDriveYDistanceCommand extends CommandBase {
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
+     * @param driveDistance The distance to drive
+     * @param yDrive The speed to drive
      */
     public AutonDriveYDistanceCommand(DriveSubsystem subsystem, double driveDistance, double yDrive) {
         drive = subsystem;

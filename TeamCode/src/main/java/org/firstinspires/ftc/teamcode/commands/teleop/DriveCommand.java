@@ -38,7 +38,6 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        m_DriveSubsystem.setImuOffset(90);
     }
 
 

@@ -7,22 +7,18 @@ import org.firstinspires.ftc.teamcode.utils.WaitTimer;
 
 public class AutonExtend extends CommandBase {
     private final ExtensionMechanismSubsystem extension;
-    private double extensionTime;
-    private WaitTimer waitTimer;
 
 
-    public AutonExtend(ExtensionMechanismSubsystem extension, double extensionTime) {
+    public AutonExtend(ExtensionMechanismSubsystem extension) {
 
         this.extension = extension;
-        this.extensionTime = extensionTime;
-        this.waitTimer = new WaitTimer(extensionTime);
+
 
         addRequirements(extension);
     }
 
     @Override
     public void initialize() {
-        waitTimer.startTimer();
     }
 
     @Override
@@ -32,7 +28,7 @@ public class AutonExtend extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return waitTimer.isFinished();
+        return false;
     }
 
     @Override

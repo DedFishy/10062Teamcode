@@ -1,29 +1,21 @@
 package org.firstinspires.ftc.teamcode.commands.auton;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.util.Timing;
 
 import org.firstinspires.ftc.teamcode.subsystems.ExtensionMechanismSubsystem;
 import org.firstinspires.ftc.teamcode.utils.WaitTimer;
 
 public class AutonRetract extends CommandBase {
     private final ExtensionMechanismSubsystem extension;
-    private double extensionTime;
-    private WaitTimer waitTimer;
 
 
-    public AutonRetract(ExtensionMechanismSubsystem extension, double extensionTime) {
+    public AutonRetract(ExtensionMechanismSubsystem extension) {
 
         this.extension = extension;
-        this.extensionTime = extensionTime;
-        this.waitTimer = new WaitTimer(extensionTime);
-
         addRequirements(extension);
     }
 
-    @Override
-    public void initialize() {
-        waitTimer.startTimer();
-    }
 
     @Override
     public void execute() {
@@ -32,7 +24,7 @@ public class AutonRetract extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return waitTimer.isFinished();
+        return false;
     }
 
     @Override

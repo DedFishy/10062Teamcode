@@ -1,19 +1,18 @@
 package org.firstinspires.ftc.teamcode.commands.auton;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.util.Timing;
 
 import org.firstinspires.ftc.teamcode.subsystems.PivotMechanismSubsystem;
+import org.firstinspires.ftc.teamcode.utils.WaitTimer;
 
 public class AutonPivotRaise extends CommandBase {
 
     private final PivotMechanismSubsystem pivot;
-    private double revolutions;
     private final double stationaryPower = 0.1;
-
-    public AutonPivotRaise(PivotMechanismSubsystem pivot, double revolutions) {
+    public AutonPivotRaise(PivotMechanismSubsystem pivot) {
 
         this.pivot = pivot;
-        this.revolutions = revolutions;
         addRequirements(pivot);
     }
 
@@ -25,7 +24,7 @@ public class AutonPivotRaise extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return pivot.getPivotPosition() >= revolutions;
+        return false;
     }
 
     @Override

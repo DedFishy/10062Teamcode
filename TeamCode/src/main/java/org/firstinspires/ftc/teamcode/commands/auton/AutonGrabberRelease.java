@@ -8,17 +8,14 @@ import org.firstinspires.ftc.teamcode.utils.WaitTimer;
 public class AutonGrabberRelease extends CommandBase {
 
     private final GrabberMechanismSubsystem grabber;
-    private final WaitTimer timer;
 
     public AutonGrabberRelease(GrabberMechanismSubsystem grabber) {
 
         this.grabber = grabber;
-        this.timer = new WaitTimer(5);
     }
 
     @Override
     public void initialize() {
-        timer.startTimer();
     }
 
     @Override
@@ -28,7 +25,7 @@ public class AutonGrabberRelease extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return timer.isFinished();
+        return false;
     }
 
     @Override

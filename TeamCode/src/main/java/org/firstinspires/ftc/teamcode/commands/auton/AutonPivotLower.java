@@ -7,12 +7,10 @@ import org.firstinspires.ftc.teamcode.subsystems.PivotMechanismSubsystem;
 public class AutonPivotLower extends CommandBase {
 
     private final PivotMechanismSubsystem pivot;
-    private double revolutions;
 
-    public AutonPivotLower(PivotMechanismSubsystem pivot, double revolutions) {
+    public AutonPivotLower(PivotMechanismSubsystem pivot) {
 
         this.pivot = pivot;
-        this.revolutions = revolutions;
         addRequirements(pivot);
     }
 
@@ -24,7 +22,7 @@ public class AutonPivotLower extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return pivot.getPivotPosition() <= revolutions;
+        return false;
     }
 
     @Override
